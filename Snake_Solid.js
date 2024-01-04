@@ -2,6 +2,7 @@
 /* - - - - - - - - - 
   SNAKE GAME SOLID
  - - - - - - - - - */
+/* Basic Snake Game no additions or extra */
 
 //Field
 const gridSize = 20;
