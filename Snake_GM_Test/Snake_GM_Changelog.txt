@@ -1,0 +1,31 @@
+SNAKE_GM
+
+v1.0
+- Basic Snake Game 
+    + Move Snake 
+    + Rand Apple pos
+    + Snake Eat and Grow
+- Game Logic
+    + Snake collide with itself Game Over
+    + Snake hit border Game Over
+    + Score and Game Over displayed when game Over
+    + Snake speed gradually increases to a max
+    + Snake Rand pos.
+    + Apple can't appear behind snake head or snake body
+- Snake AI
+    + X and Y direction to apple is found. Snake is suggested to move in that direction.
+    _ if that direction will not cause gameOver snake will move in that direction else it will
+    _ move in a preferential direction until that suggestion no longer causes gameOver.
+-Flaws
+    +? Speed dependent on changing framerate
+    + Moving from and back in the same direction fast enough will cause snake collide
+
+v2.0
+-Additions
+ + More CSS
+ + Leaderboard
+ + Play Again, Pause and Restart button
+- Snake AI
+ + Plan out entire path and determine if crash and then generate a new path until apple
+ _ can be eaten safely.
+
