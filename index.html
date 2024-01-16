@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="10; url=https://leospars.github.io/Snake_Game/snake.html">
+    <title>Redirect to Snake Game</title>
+    <link rel="stylesheet" href=".\security.css">
+</head>
+<body>
+    <h1><u> Snake Game</u></h1>
+    <h2> Tasks: </h2>
+        <ul> 
+            <li> Add sign in capabilities / Accounts </li>
+            <li> Store HighScore </li>
+            <li> Create Leader Board </li>
+            <li> Add buttons to make snake use ai algorithm rather than user control </li>
+            <li> Implement A* Search Algorithm </li>
+            <li> Fix gridlines </li>
+        </ul>
+    <h2> Current Features: </h2>    
+        <ul> 
+            <li> Fully operable Snake Game using user input</li>
+            <li> Can use Hamiltonian Cycle </li>
+            <ul>
+                Hamiltonian Cycle is a path in graph theory that visits each vertex exactly once. <br />
+                Implementing this in the snake game, the snake visits every square on the board exactly once. <br />
+                This prevents the snake from ever hitting itself or the wall and will always eat the apple, no <br />
+                matter what random position it is generated in except when the field/canvas does not have an even <br />
+                number of columns and rows. <br /><br />
+                This may easily e resolved by adding an if statement to stat the HC cycle in an even position.<br />
+                However, this is very boring so we will try to implement a code that will allow the snake to generate <br />
+                a new HC cycle every time it eats an apple and one that avoids the possibility of hitting itself in the <br />
+                cycle where the map does not have even sides. <br />
+            </ul>
+            <li> Can use algorithm to eat apple </li>
+            <ul>
+                <li> It preferentially choses to go right over left and up over down</li>
+                <li> and it will not hit itself or the wall unless no other option is available</li>
+            </ul>
+            <li> Can speed up game </li>
+        </ul>
+    <h2> Bugs: </h2>
+        <ul>
+            <li> Snake can go through itself if you press the opposite direction fast enough</li>
+            * Solution: Add buffer to allow the next input to pass after the body new position update is complete.
+        </ul>
+        <br />
+    <h1>Redirecting to the main page in 0 seconds...</h1>
+    </body>
+    <script>
+        // setTimeout(function(){
+        //     window.location.href = 'https://leospars.github.io/Security/securityApp.html';
+        //     console.log("Page redirected to securityApp.html");
+        // }, 3000);
+    </script>
+</html>
