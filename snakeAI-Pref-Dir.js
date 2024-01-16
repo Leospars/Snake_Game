@@ -6,7 +6,7 @@ yDistToApple = snake.yPos - appleY;
 
 
 function snakeAi(){
-    findBallDir();
+    findAppleDir();
     travelX(xDistToApple, yDistToApple);
     travelY(xDistToApple, yDistToApple);
 }
@@ -34,7 +34,7 @@ function travelY(xDistToApple, yDistToApple){
         } 
 }
 
-function findBallDir(){
+function findAppleDir(){
     appleIsUp = (yDistToApple>0);
     appleIsRight = (xDistToApple<0);
 }
@@ -42,7 +42,7 @@ function findBallDir(){
 function snakeDir(dirPrompt){
     let crash = crashReport();
     let crashLog =  [crash.right+0, crash.left+0, crash.up+0, crash.down+0];
-    findBallDir();
+    findAppleDir();
     // console.log(dirPrompt + ": " + crashLog);
 
     switch (dirPrompt) {
@@ -100,7 +100,6 @@ function crashReport(movesAhead = 1){
 }
 
 /*
-
     //Snake_AI
     //AI PROJECT 
     function snakeAi(){

@@ -22,33 +22,110 @@ var gameOver = false;
 var paused = false;
 var score = 0;
 var highScore = 0;
-var frameRate = 1000/10; //10fps
-var initialFrameRate = frameRate;
+let frameRate = 500/10; //100fps
+let initialFrameRate = frameRate;
 
 function moveRight(){ snake.velocity(1,0);} 
 function moveLeft(){ snake.velocity(-1,0);} 
 function moveUp(){ snake.velocity(0,-1);} 
 function moveDown(){ snake.velocity(0,1);} 
 
+/**
+ * Represents a button element.
+ * @typedef {Object} Button
+ * @property {HTMLElement} id - The button element.
+ * @method click - Adds a click event listener to the button.
+ */
+class Button{
+    idName;
+    
+    constructor(id){
+        this.id = document.getElementById(id);
+        this.idName = id;
+    }
+
+    click(func){
+        this.id.addEventListener("click", func);
+    }
+};
+const button = Button;
+
 window.onload = function() {
+    //Field
     field = document.getElementById("field");
     field.height = gridSize*rows;
     field.width = gridSize*cols;
 
+    //Canvas
     context = field.getContext("2d");
+    //Overlay
+    overlay = document.getElementById("overlay");
+
+    //Keyboard Listeners
     document.addEventListener("keyup", changeDirection);
     document.body.addEventListener("keyup", spacebarPause);
     
-    let restartButton = document.getElementById("restart");
-    restartButton.addEventListener("click", restart);
-    let pauseButton = document.getElementById("pause");
-    pauseButton.addEventListener("click", pause);
-    let gridlineButton = document.getElementById("gridlines");
-    gridlineButton.addEventListener("click", gridlines);
+    //Button Listeners
+    let restartButton = new button("restart");
+    restartButton.click(restart);
+ 
+    let pauseButton = new button("pause");
+    pauseButton.click(pause);
 
+    let speedButton = new button("boost");
+    speedButton.id.addEventListener("mousedown", function(){
+        console.log("frameRate: ", frameRate, "ms");
+        let intervalID = setInterval(function() {
+            frameRate = Math.max(frameRate*.65, 0.01);
+            console.log("frRate: ", frameRate, "ms");
+            refreshAnimation();
+        }, 100);
+        
+        speedButton.id.addEventListener("mouseup", function(){
+            clearInterval(intervalID);
+        });
+    });
+
+    //Create Button 10x
+    let speed10x = document.createElement("button", "speed10x");
+    let ui_buttons = document.getElementById("ui_buttons");
+    ui_buttons.appendChild(speed10x);
+    speed10x.innerHTML = "10x";
+
+    //Make Button 10x speed up snake 10x and cap at 5ms
+    speed10x.addEventListener("click", function(){
+        console.log("10x button was clicked");
+        frameRate /= 10;
+        refreshAnimation();
+        console.log("frameRate: ", frameRate, "ms");
+    });
+
+    //Create Button 1x
+    let speed1x = new button("speed1x");
+    speed1x.id.innerHTML = "1x";
+
+    //Make Button 10x speed up snake 10x and cap at 5ms
+    speed1x.click( function(){
+        console.log("1x button was clicked");
+        frameRate = initialFrameRate;
+        refreshAnimation();
+        console.log("frameRate: ", frameRate, "ms");
+    });
+
+    let gridlineButton = new button("gridlines");
+    gridlineButton.click(showGridlines);
+
+
+    //Initialize Game
     snake.initialPosition();
     placeApple();
-    setInterval(update, frameRate);
+    let gameUpdate = setInterval(update, frameRate);
+    
+    function refreshAnimation(){
+        clearInterval(gameUpdate);
+        gameUpdate = setInterval(update, frameRate);
+    }
+
     // window.requestAnimationFrame(update);
 }
 
@@ -113,7 +190,7 @@ function update() {
         document.getElementById("highScore").innerHTML= (highScore);
         document.getElementById("score").innerHTML= (score);
 
-        frameRate = Math.max(frameRate*0.95, 50);
+        // frameRate = Math.max(frameRate*0.95, 50);
         console.log("frameRate: ", frameRate, "ms\nscore: ", score);
 
         snake.body.push([appleX, appleY]);
@@ -269,6 +346,7 @@ function changeDirection(event) {
    else if(event.code == "ArrowRight" && snake.xVel != -1) {
         moveRight();
     }
+
 }
 
 function rand(smallest, largest) {
@@ -317,30 +395,42 @@ function outlineSnake(){
 
 
 let gridlineIsVisible = false;
-const hideGridlines = () => {
-    //Draw Field
-    context.fillStyle = "yellow";;
-    context.clearRect(0,0,field.width, field.height);
-}
 
-function gridlines(){
-    console.log("code was run");
+    let gridline_layer = document.getElementById("overlay");
+    let gridline_context = gridline_layer.getContext("2d");
+    gridline_layer.height = gridSize*rows;
+    gridline_layer.width = gridSize*rows;
+
+function showGridlines(){
     if(!gridlineIsVisible){
-        context.strokeStyle = "grey";
-        for (let i = 0; i < field.height; i++) {
-            context.moveTo(0, gridSize*i);
-            context.lineTo(field.width, gridSize*i);
-            // context.stroke();
-        }
-        for (let i = 0; i < field.width; i++) {
-            context.moveTo(gridSize*i, 0);
-            context.lineTo(gridSize*i, field.height);
-            context.stroke();
-        } 
-        gridlineIsVisible = true;
+        console.log("gridline was run");
+        let intervalID = setInterval(() => {
+            gridline_context.fillStyle = "white";
+            gridline_context.clearRect(0,0,field.width, field.height);
+            gridline_context.fillRect(0,0,field.width, field.height);
+
+            gridline_context.strokeStyle = "grey";
+            for (let i = 0; i < field.height; i++) {
+                gridline_context.moveTo(0, gridSize*i);
+                gridline_context.lineTo(field.width, gridSize*i);
+                // context.stroke();
+            }
+            for (let i = 0; i < field.width; i++) {
+                gridline_context.moveTo(gridSize*i, 0);
+                gridline_context.lineTo(gridSize*i, field.height);
+                gridline_context.stroke();
+            } 
+            gridlineIsVisible = true;
+        }, frameRate);
     }
     else{
+        clearInterval(intervalID);
         hideGridlines();
         gridlineIsVisible = false;
     }
+}
+
+function hideGridlines() {
+    gridline_context.fillStyle = "yellow";
+    gridline_context.clearRect(0,0,field.width, field.height);
 }
