@@ -1,42 +1,43 @@
 /*AI PROJECT */
 //Snake_AI - Apple Location and Preferential Direction
+/**
+ * Snake moves towards apple and chooses right over left and up over down for each movement
+ * And uses the function crashReport() to check if it's next move will cause it crash 
+ * then chooses and alternate direction.
+ * All functions are dependent on the global variables apple_xDist and apple_yDist
+ */
 
-xDistToApple = snake.xPos - appleX;
-yDistToApple = snake.yPos - appleY;
+let appleIsUp, appleIsRight;
+let apple_xDist, apple_yDist;
 
-
-function snakeAi(){
+function snakeAI_Pref_Dir(apple_xDistance, apple_yDistance){
+    //Initialize global variables
+    apple_xDist = apple_xDistance;
+    apple_yDist = apple_yDistance;
+    
     findAppleDir();
-    travelX(xDistToApple, yDistToApple);
-    travelY(xDistToApple, yDistToApple);
+    travelX();
+    travelY();
 }
 
-function travelX(){
-    if(xDistToApple===0) return;
+function travelX(xDist = apple_xDist, yDist = apple_yDist){
+    if(xDist===0) return;
     
-    if(appleIsRight){
-        snakeDir("Right");
-    }
-    else if(!appleIsRight){snakeDir("Left");}
-    else if(yDistToApple==0) {snakeDir("Up");}
+    if(appleIsRight) snakeDir("Right");
+    else snakeDir("Left");
 } 
 
-function travelY(xDistToApple, yDistToApple){
-    if(yDistToApple===0) return;
-        if(appleIsUp){
-            snakeDir("Up");
-        } 
-        else if(!appleIsUp){
-            snakeDir("Down");
-        }
-        else if(xDistToApple==0){
-            snakeDir("Right");
-        } 
+function travelY(xDist = apple_xDist, yDist = apple_yDist){
+    if(yDist===0) return;
+    
+    if(appleIsUp) snakeDir("Up");
+    else snakeDir("Down");
 }
 
-function findAppleDir(){
-    appleIsUp = (yDistToApple>0);
-    appleIsRight = (xDistToApple<0);
+function findAppleDir(appleXDist = apple_xDist, appleYDist = apple_yDist){
+    appleIsUp = (appleYDist>0);
+    appleIsRight = (appleXDist<0);
+    if(appleXDist == undefined && appleYDist == undefined) pause();
 }
 
 function snakeDir(dirPrompt){
@@ -100,62 +101,7 @@ function crashReport(movesAhead = 1){
 }
 
 /*
-    //Snake_AI
-    //AI PROJECT 
-    function snakeAi(){
-        checkSnakeMovement();
-
-        travelX();
-            if(yDistance>0) appleIsUp = true;
-            if(yDistance!=0){
-                if(appleIsUp && !movingDown)
-                    snakeDir("Up"); //Move Up
-                else if(!appleIsUp && !movingUp){snakeDir("Down")}
-                else if(xDistance==0){snakeDir("Right");}
-            } 
-    }
-
-    function travelX(){
-        checkSnakeMovement();
-        if(xDistance<0) appleIsRight = true;
-        if(xDistance!=0){
-            if(appleIsRight && !movingLeft)
-                snakeDir("Right");
-            else if(!appleIsRight && !movingRight){snakeDir("Left");}
-            else if(yDistance==0) snakeDir("Up");
-        }
-        // else if(xDistance===0){snakeVelocity(0,0)}
     
-            // else turn();
-        // if(xDistance==0) travelY();
-    }
-
-    function travelY(){
-        if(yDistance>0) appleIsUp = true;
-        if(yDistance!=0){
-            if(appleIsUp && !movingDown){
-                console.log("UP. S !Down. ⬆️");
-                snakeDir("Up");
-            } else if(!appleIsUp && !movingUp){
-                console.log("DOWN. S !Up. ⬇️");
-                snakeDir("Down");
-            }
-            else turn();
-        }
-        if(yDistance==0) travelX();
-    }
-
-    function turn(){
-        if((movingRight||movingLeft) && xDistance===0){ if(appleIsUp) snakeDir("Up"); else snakeDir("Down"); }
-        if((movingUp||movingDown)){ if(appleIsRight) snakeDir("Right"); else snakeDir("Left");}
-    }
-
-    if(snakeCollision()) {
-        gameOver = true;
-        document.getElementById("GameOver").innerHTML = "Game Over";
-    }
-}
-
 function predictPosition(dirPrompt){
     var snakePos = [snakeX, snakeY]
     var prediction = [[-1,-1]];
