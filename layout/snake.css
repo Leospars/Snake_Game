@@ -1,13 +1,17 @@
 /*Laptop Screens*/
-@media (max-width: 1400px) {
-    body{
+@media (min-width: 1400px) {
+    html {
         font-size: 16px;
     }
 }
 
 /*Mobile*/
 @media (max-width: 450px) {
-    body{
+    html {
+        font-size: 12px;
+    }
+
+    button {
         font-size: 12px;
     }
 }
@@ -17,7 +21,7 @@ body{
     text-align: center;
     text-decoration: none;
     background-image: url(snake_bg.png);
-    width: 75vw;
+    /*background-size: cover;*/
 
     /*center body*/
     margin: 0 auto;
@@ -27,7 +31,7 @@ body{
     font-size: 1rem;
 
     /*prevent scroll on page*/
-    overflow: hidden;
+    /* overflow: hidden; */
 
     /*prevent cursor highlight*/
     -webkit-touch-callout: none;
@@ -37,9 +41,18 @@ body{
     user-select: none;
 }
 
+#container {
+    /*width: 100vw;*/
+    height: auto;
+    display: block;
+    /*filter: blur(20px);*/
+    overflow: none;
+}
+
 .gameField{
     /*Make canvas fit screen*/
-    width: 50%;
+    width: 70%;
+    /* height: 60vh; */
     position: relative;
     left: 0;
     top: 0;
@@ -47,7 +60,7 @@ body{
     background: black;
 
     /* url(https://img.freepik.com/premium-vector/cute-pastel-green-checkerboard-checkered-gingham-plaid-tartan-pattern-background-wallpaper_565280-454.jpg?w=750)!important; */
-    border-radius: 1.2rem;
+    border-radius: 1rem;
     border: 0.25rem solid black;
     color: white;
     /*width: 40rem;*/
@@ -69,13 +82,6 @@ body{
 /*    border: 5px solid black;*/
 /*    background-color: aquamarine;*/
 /*}*/
-
-.snakechan{
-    width: 20px;
-    height: 20px;
-    background-color: green;
-    border: 1px solid yellow;
-}
 
 .alert{
     display: block;
@@ -111,7 +117,7 @@ body{
 
 button{
     display: inline-block;
-    margin: 5px;
+    margin: 0.3rem;
     background-color: lavender;
     font-variant-caps: all-small-caps;
 }
@@ -119,6 +125,9 @@ button{
 button:hover{
     color: blueviolet;
     transform: scale(1.05);
-
 }
 
+button:active {
+    color: blueviolet;
+    transform: scale(0.95);
+}
