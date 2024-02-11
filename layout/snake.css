@@ -31,7 +31,7 @@ body{
     font-size: 1rem;
 
     /*prevent scroll on page*/
-    /* overflow: hidden; */
+     overflow: hidden;
 
     /*prevent cursor highlight*/
     -webkit-touch-callout: none;
@@ -46,13 +46,13 @@ body{
     height: auto;
     display: block;
     /*filter: blur(20px);*/
-    overflow: none;
+    overflow: clip;
 }
 
 .gameField{
     /*Make canvas fit screen*/
-    width: 70%;
-    /* height: 60vh; */
+    width: 50vh;
+    height: 50vh;
     position: relative;
     left: 0;
     top: 0;

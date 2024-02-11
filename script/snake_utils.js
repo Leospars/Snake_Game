@@ -25,14 +25,14 @@ let setButtonEvents = function() {
     //Button Listeners
     let restartButton = new Button("restart");
     restartButton.click(restart);
- 
+
     let pauseButton = new Button("pause_play");
     pauseButton.click(pause_play);
 
     let gridlineButton = new Button("gridlines");
     gridlineButton.click(showGridlines);
-    
-    
+
+
     let speedButton = new Button("boost");
     speedButton.id.addEventListener("mousedown", speedUp);
 
@@ -44,7 +44,7 @@ let setButtonEvents = function() {
     speed1x.click( () => {
         changeFrameRate(() => frameRate = initialFrameRate);
     });
-    
+
     //Create Button 10x
     let speed10x = new Button ("speed10x");
     speed10x.innerHTML = "10x";
@@ -53,7 +53,7 @@ let setButtonEvents = function() {
     speed10x.click(() => {
         changeFrameRate(x10 = () => frameRate /= 10);
     });
-    
+
     //Create Super speed Button
     let superSpeedButton = new Button("superSpeed");
     superSpeedButton.click(function(){
@@ -77,7 +77,7 @@ function speedUp(){
         console.log("frRate: ", frameRate, "ms");
         refreshAnimation();
     }, 100);
-    
+
     speedButton.id.addEventListener("mouseup", function(){
         clearInterval(intervalID);
     });
@@ -108,7 +108,7 @@ function showGridlines(){
                 gridline_context.moveTo(gridSize*i, 0);
                 gridline_context.lineTo(gridSize*i, gridline_layer.height);
                 gridline_context.stroke();
-            } 
+            }
             gridlineIsVisible = true;
         }, frameRate);
     }
@@ -148,10 +148,10 @@ function pause_play(){
 
 function restart(){
     document.getElementById("GameOver").innerHTML= "";
-    document.getElementById("score").innerHTML= "";
+    document.getElementById("score").innerHTML= "0";
     field.classList.remove("hidden");
     snake.velocity(0,0);
-    
+
     //Reset Global Variables
     gameOver = false;
     paused = false;
@@ -161,7 +161,7 @@ function restart(){
     snakeTrack = [];
     // run_AI_Pref_Dir = false;
     // run_AI_Hamil_Cycle = false;
-    
+
     //Initialize Canvas
     snake.initializePosition();
     placeApple();
