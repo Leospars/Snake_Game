@@ -37,6 +37,7 @@ function moveDown(snakeObj = snake){ snakeObj.velocity(0,1);}
 //AI variables
 var run_AI_Pref_Dir = false;
 var run_AI_Hamil_Cycle = false;
+var showGridlines = false;
 
 //Field
 field = document.getElementById("field");
@@ -104,6 +105,22 @@ function update() {
         context.clearRect(0, 0, field.width, field.height);
         context.fillRect(0, 0, field.width, field.height);
 
+        // context.fillStyle = "white";
+        // context.clearRect(0, 0, field.width, field.height);
+        // context.fillRect(0, 0, field.width, field.height);
+        if(showGridlines) {
+            context.strokeStyle = "grey";
+            for (let i = 0; i < field.height; i++) {
+                context.moveTo(0, gridSize * i);
+                context.lineTo(field.width, gridSize * i);
+                // context.stroke();
+            }
+            for (let i = 0; i < field.width; i++) {
+                context.moveTo(gridSize * i, 0);
+                context.lineTo(gridSize * i, field.height);
+                context.stroke();
+            }
+        }
         //Draw Apple
         context.fillStyle = "red";
         context.fillRect(appleX, appleY, gridSize, gridSize)
@@ -117,10 +134,10 @@ function update() {
             snakeAI_Pref_Dir(xDistToApple, yDistToApple);
         }
         if (run_AI_Hamil_Cycle === true) {
-            let start = performance.now();
-            snakeAIHC();
-            let end = performance.now();
-            console.log("time taken for hamilCycle: " + (end-start)*1000 + " ms");
+            // console.time("hamilCycleFunc");
+            snakeAI_Hamil_Cycle();
+            // pause_play();
+            // console.timeEnd("hamilCycleFunc");
         }
 
         //Update Snake
@@ -189,13 +206,13 @@ function isOutsideField([testX, testY], xBoundary = [0,field.width], yBoundary =
 }
 
 function drawSnake(snakeObj = snake, headColor = "rgb(20,160,30)", bodyColor = "lime", grid = gridSize){
-    //Draw Head new position
+    //Draw Head new location
     context.strokeStyle = "yellow";
     context.fillStyle = headColor;
     context.fillRect(snakeObj.xPos, snakeObj.yPos, grid, grid);
     context.strokeRect(snakeObj.xPos, snakeObj.yPos, grid, grid);
 
-    //Draw Snake Body new position
+    //Draw Snake Body new location
     context.fillStyle = bodyColor;
     for (let i = 0; i <= snakeObj.body.length-1; i++) {
         context.fillRect(snakeObj.body[i][0], snakeObj.body[i][1], grid, grid);

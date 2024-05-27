@@ -53,7 +53,7 @@ function snakeDir(dirPrompt){
     else if(isArraySame(crashLog, [1,1,1,1])){
         console.log("We give up. No moves available!");
         console.log("SnakeAi Lost.");
-        return pause();
+        return pause_play();
     }
 
     switch (dirPrompt) {

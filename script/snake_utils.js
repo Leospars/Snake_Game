@@ -30,8 +30,7 @@ let setButtonEvents = function() {
     pauseButton.click(pause_play);
 
     let gridlineButton = new Button("gridlines");
-    gridlineButton.click(showGridlines);
-
+    gridlineButton.click(() => (showGridlines = !showGridlines));
 
     let speedButton = new Button("boost");
     speedButton.id.addEventListener("mousedown", speedUp);
@@ -83,47 +82,6 @@ function speedUp(){
     });
 }
 
-let gridlineIsVisible = false;
-let gridline_layer = document.getElementById("overlay");
-let gridline_context = gridline_layer.getContext("2d");
-gridline_layer.height = "inherit";
-gridline_layer.width = "inherit";
-
-function showGridlines(){
-    let intervalID;
-    if(!gridlineIsVisible){
-        console.log("gridline was run");
-        intervalID = setInterval(() => {
-            gridline_context.fillStyle = "white";
-            gridline_context.clearRect(0,0,gridline_layer.width, gridline_layer.height);
-            gridline_context.fillRect(0,0,gridline_layer.width, gridline_layer.height);
-
-            gridline_context.strokeStyle = "grey";
-            for (let i = 0; i < gridline_layer.height; i++) {
-                gridline_context.moveTo(0, gridSize*i);
-                gridline_context.lineTo(gridline_layer.width, gridSize*i);
-                // context.stroke();
-            }
-            for (let i = 0; i < gridline_layer.width; i++) {
-                gridline_context.moveTo(gridSize*i, 0);
-                gridline_context.lineTo(gridSize*i, gridline_layer.height);
-                gridline_context.stroke();
-            }
-            gridlineIsVisible = true;
-        }, frameRate);
-    }
-    else{
-        clearInterval(intervalID);
-        hideGridlines();
-        gridlineIsVisible = false;
-    }
-}
-
-function hideGridlines() {
-    gridline_context.fillStyle = "yellow";
-    gridline_context.clearRect(0,0,gridline_layer.width, gridline_layer.height);
-}
-
 let storedVelocity;
 function pause_play(){
     if(paused){
@@ -159,8 +117,7 @@ function restart(){
     frame= 0;
     frameRate = initialFrameRate; //fps
     snakeTrack = [];
-    // run_AI_Pref_Dir = false;
-    // run_AI_Hamil_Cycle = false;
+    restart_AI_variables();
 
     //Initialize Canvas
     snake.initializePosition();

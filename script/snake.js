@@ -10,9 +10,14 @@ class Snake {
     body = [];
 
     //constructor for getting gridsize, rows and columns of field
-    initializePosition() {
-        this.xPos = rand(3,cols/4) * gridSize;
-        this.yPos = rand(0,rows/4) * gridSize;
+    initializePosition(pos = [-1, -1]) {
+        if(pos[0] === -1 || pos[1] === -1) {
+            this.xPos = rand(3, cols / 4) * gridSize;
+            this.yPos = rand(0, rows / 4) * gridSize;
+        } else {
+            this.xPos = pos[0];
+            this.yPos = pos[1];
+        }
         this.head = [this.xPos, this.yPos];
         this.body = [[this.xPos - gridSize, this.yPos], [this.xPos - gridSize * 2, this.yPos], [this.xPos - gridSize * 3, this.yPos]];
     }
@@ -22,7 +27,7 @@ class Snake {
         this.yVel = vertical;
     }
 
-    //Generate snake possible movements from current position, initializing this.right, this.left, this.up, this.down
+    //Generate snake possible movements from current location, initializing this.right, this.left, this.up, this.down
     possibleMovements(snakePosition = this.head) {
         this.right = [snakePosition[0] + gridSize, snakePosition[1]];
         this.left = [snakePosition[0] - gridSize, snakePosition[1]];
