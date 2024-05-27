@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake</title>
+    <link rel="stylesheet" href="./layout/snake.css">
+
+</head>
+<body>
+<h1>Snake Game</h1>
+    <p name="alertBox" class="alert"><b>
+        <p id="GameOver" class="alert">Press Any Arrow Key to Begin</p>
+        HighScore: <p id="highScore">0</p> Score: <p id="score">0</p>
+    </b></p>
+    <div id="ui_buttons">
+        <button id="restart" type = "reset" name="Restart">Restart</button>
+        <button id="pause_play" type = "button" name="Pause_Play">⏸️</button>
+        <button id="boost" type = "button" name="Boost">Speed</button> 
+        <button id="speed1x" type = "button" name="Boost">Speed</button> 
+        <button id="gridlines" type = "button" name="Gridline">Gridlines</button> 
+    </div>
+
+    <br>
+    <canvas id="field" class="gameField"></canvas>
+    <div id="snakeHead" class="snakeHead"></div>
+</body>
+<script src="script/snake.js"></script>
+<script src="script/graph.js"></script>
+<script src="script/snake_solid.js"></script>
+<script src="script/snake_utils.js"></script>
+<script src="script/snakeAI_Pref_Dir.js"></script>
+<script src="script/snakeAI_Hamil_Cycle.js"></script>
+
+<footer>Made by Leospars</footer>
+</html>
