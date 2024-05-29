@@ -135,7 +135,7 @@ function update() {
         }
         if (run_AI_Hamil_Cycle === true) {
             // console.time("hamilCycleFunc");
-            snakeAI_Hamil_Cycle();
+            snakeBestAI();
             // pause_play();
             // console.timeEnd("hamilCycleFunc");
         }
@@ -206,17 +206,18 @@ function isOutsideField([testX, testY], xBoundary = [0,field.width], yBoundary =
 }
 
 function drawSnake(snakeObj = snake, headColor = "rgb(20,160,30)", bodyColor = "lime", grid = gridSize){
+    //Draw Snake Body new location
+    context.fillStyle = bodyColor;
+    for (let i = 0; i <= snakeObj.body.length-1; i++) {
+        context.fillRect(snakeObj.body[i][0], snakeObj.body[i][1], grid, grid);
+    }
+
     //Draw Head new location
     context.strokeStyle = "yellow";
     context.fillStyle = headColor;
     context.fillRect(snakeObj.xPos, snakeObj.yPos, grid, grid);
     context.strokeRect(snakeObj.xPos, snakeObj.yPos, grid, grid);
 
-    //Draw Snake Body new location
-    context.fillStyle = bodyColor;
-    for (let i = 0; i <= snakeObj.body.length-1; i++) {
-        context.fillRect(snakeObj.body[i][0], snakeObj.body[i][1], grid, grid);
-    }
 }
 
 function spacebarPause(event){
