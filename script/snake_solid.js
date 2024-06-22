@@ -125,6 +125,12 @@ function update() {
         context.fillStyle = "red";
         context.fillRect(appleX, appleY, gridSize, gridSize)
 
+        //Update Snake
+        /* When direction is pressed snake is updated so if statement prevents two
+         * consecutive updates */
+        if (arrowKeyPressed) arrowKeyPressed = !arrowKeyPressed;
+        else snake.update();
+
         //Initialize AI
         let xDistToApple = snake.xPos - appleX;
         let yDistToApple = snake.yPos - appleY;
@@ -140,33 +146,24 @@ function update() {
             // console.timeEnd("hamilCycleFunc");
         }
 
-        //Update Snake
-        /* When direction is pressed snake is updated so if statement prevents two
-         * consecutive updates */
-        if (arrowKeyPressed) arrowKeyPressed = !arrowKeyPressed;
-        else snake.update();
-
         //Update Canvas
         drawSnake();
 
-        //Trace Snake center
-        // outlineSnake();
-    }
+        //Eat Apple
+        if (appleWasAte()) {
+            score++;
+            highScore = Math.max(highScore, score);
+            document.getElementById("highScore").innerHTML = (highScore);
+            document.getElementById("score").innerHTML = (score);
 
-    //Eat Apple
-    if (appleWasAte()) {
-        score++;
-        highScore = Math.max(highScore, score);
-        document.getElementById("highScore").innerHTML = (highScore);
-        document.getElementById("score").innerHTML = (score);
+            // frameRate = Math.max(frameRate*0.95, 50);
+            console.log("frameRate: ", frameRate, "ms\nscore: ", score);
 
-        // frameRate = Math.max(frameRate*0.95, 50);
-        console.log("frameRate: ", frameRate, "ms\nscore: ", score);
-
-        snake.body.push([-1,-1]);
-        placeApple();
-        context.fillStyle = "red";
-        context.fillRect(appleX, appleY, gridSize, gridSize)
+            snake.body.push([-1,-1]);
+            placeApple();
+            context.fillStyle = "red";
+            context.fillRect(appleX, appleY, gridSize, gridSize)
+        }
     }
 
     if(snake.body.length ===  rows*cols+1){
