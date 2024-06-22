@@ -47,53 +47,69 @@ class GridGraph extends Graph {
     /** @info: Implement A* Search Algorithm
      * @param {number} startAt - The starting node.
      * @param {number} search - The node to search for.
-     * @param {Array} blocks - The nodes to avoid.
+     * @param {Array} block - The nodes to avoid.
      * @returns {Array} - The shortest path to the search node.
      * @TODO: Properly implement a condition to find if it is not possible to find a path
      *       to prevent stack overflow from recursion and return error/empty array.
      *       Consider adding distance as a function for different types of graphs
      *       or not and just create child classes with overrides.
      */
-    #path = [];
-    aStarSearch(startAt, search, blocks = []){
-        let shortestDist = Number.MAX_VALUE; //Allows for shortestDist to be first distance
-        let closestNode = -1;
-        if(this.#path.length === 0)
-            this.#path.push(startAt);
 
-        if (startAt === search)
-            return this.#path;
+    aStarSearch(startAt, search, block = []){
+        let path = [];
+        let blockedNodes = block.slice(); //Allow blocks to be thread safe
+        let aStarSearchUtil = (startAt, search, blocks) => {
+            let shortestDist = Number.MAX_VALUE; //Allows for shortestDist to be first distance
+            let closestNode = -1;
 
-        for (let node of this.V[startAt].edges) {
-            if(blocks.includes(node)){
-                if(!(node === startAt))
-                    console.log("Node: ", node, " is blocked.");
-                continue;
+            //Check if startAt and search are nodes in the graph
+            if(!(startAt in this.V) || !(search in this.V)){
+                new Error("Node not in graph.");
+                return [];
             }
 
-            let distance = this.distBetweenNodes(search, node);
-            if(distance < shortestDist){
-                shortestDist = distance;
-                closestNode = node;
+            if(path.length === 0) {
+                path.push(startAt);
+                if(startAt == search) return path;
             }
+            if(path.length > this.V.length) {
+                console.error("Every vertex has been visited. Cannot find path.");
+                return [];
+            } //Prevent stack overflow from recursion
+
+            if (startAt === search) return path;
+
+            for (let node of this.V[startAt].edges) {
+                if(blocks.includes(node)){
+                    if(!(node === startAt))
+                        // console.log(startAt + " Node: ", node, " is blocked.");
+                    continue;
+                }
+
+                let distance = this.distBetweenNodes(search, node);
+                if(distance < shortestDist){
+                    shortestDist = distance;
+                    closestNode = node;
+                }
+            }
+
+            if(closestNode === -1){
+                console.error("Cannot move to node, currently enclosed.", path);
+                return [];
+            }
+
+            path.push(closestNode);
+
+            //Update blocks/snakeBody only for SnakeGame
+            blocks.unshift(startAt);
+            blocks.pop();
+
+            return aStarSearchUtil(closestNode, search, blocks);
         }
 
-        if(closestNode === -1){
-            console.error("Cannot move to node, currently enclosed.");
-            return [];
-        }
-
-        this.#path.push(closestNode);
-        console.log("Path: ", this.#path);
-
-        //Update blocks/snakeBody only for SnakeGame
-        blocks.unshift(startAt);
-        blocks.pop();
-
-        console.log("Blocks: ", blocks);
-        return this.aStarSearch(closestNode, search, blocks);
+        return aStarSearchUtil(startAt, search, blockedNodes);
     }
-
+    
     distBetweenNodes = (a, b) => {
         const gridNumToPoint = (gridNumber) => {
             let xPos = (gridNumber % this.cols) * this.grid;
