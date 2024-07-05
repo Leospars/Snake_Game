@@ -236,40 +236,6 @@ function DFSearchPath(graph, initPath = [], vertex) {
     return visited;
 }
 
-function isHamilPath(graph = new Graph(), path = [0]) {
-    if (isObjectEmpty(graph) || graph.V[0].edges.length === 0) {
-        // throw new Error("Graph is empty or node not tranversable");
-        return false;
-    }
-    if (path.length < 3)
-        return false;
-
-    if (graph.V[path[0]] === undefined || graph.V[path[(path.length - 1)]] === undefined) {
-        // throw new Error("Node is not in graph" + graph.V[path[0]] + graph.V[path[(path.length - 1)]]);
-        return false;
-    }
-
-    let endWithEdge = graph.V[path[0]].edges.includes(path[(path.length - 1)]);
-    if (endWithEdge) {
-        //Check if gridPath has repeated/duplicate V
-        for (let i = 1; i < path.length - 1; i++) {
-            if (graph.V[i] === undefined) {
-                // throw new Error("Node is not in graph");
-                return false;
-            }
-            if (path.slice(i + 1).includes(path[i]))
-                return false;
-        }
-        return true;
-    } else
-        return false;
-}
-
-function isHamilCycle(graph, path) {
-    let endWithStart = path[0] === path[(path.length - 1)];
-    return (isHamilPath(graph, path) && endWithStart);
-}
-
 /**
  * Removes duplicate arrays from a 2D array.
  * @param {Array} array2D - The 2D array to remove duplicates from.

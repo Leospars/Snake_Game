@@ -1,4 +1,4 @@
-// import { field_params } from "./snake_solid.js";
+// import { field_params } from "./snake_main.js";
 // const {gridSize, cols, rows} = field_params;
 
 class Snake {

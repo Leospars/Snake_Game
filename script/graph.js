@@ -1,4 +1,4 @@
-class Vertex{
+export class Vertex {
     location = 0;
     edges = [];
 
@@ -18,17 +18,15 @@ class Graph{
     }
 }
 
-class GridGraph extends Graph {
-    rows = rows;
-    cols = cols;
-    grid = gridSize;
+export class GridGraph extends Graph {
+    rows = 0;
+    cols = 0;
 
-    constructor(_rows = rows, _cols = cols, gridSz = gridSize){
+    constructor(_rows = rows, _cols = cols) {
         super();
         this.rows = _rows;
         this.cols = _cols;
-        this.grid = gridSz;
-        
+
         let V = {};
         for(let i = 0; i < _rows; i++){
             for(let j = 0; j < _cols; j++){
@@ -36,8 +34,8 @@ class GridGraph extends Graph {
                 let edge = [];
                 if(v % _cols !== 0) edge.push(v - 1); //if not left border add left edge
                 if(v % _cols < _rows - 1) edge.push(v + 1); //if not right border add right edge
-                if(v >= _cols) edge.push(v - cols); //top border
-                if(v < _rows * _cols - _cols) edge.push(v + cols); //bottom border
+                if (v >= _cols) edge.push(v - _cols); //top border
+                if (v < _rows * _cols - _cols) edge.push(v + _cols); //bottom border
                 V[v] = new Vertex(v, edge);
             }
         }

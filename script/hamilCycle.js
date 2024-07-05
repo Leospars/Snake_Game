@@ -1,65 +1,68 @@
+import {GridGraph} from "./graph.js";
 
 //Write funciton to implement Hamiltonian Cycle
-function hamiltonianCycle(graph = new Graph(), startAt = 0) {
+let hamilPaths = [];
+
+function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = []) {
     //Check if startAt and search are in the graph
     if(!(startAt in graph.V)){
         new Error("Node not in graph.");
         return [];
     }
 
-    let visited = [startAt];
     hamilPaths = [];
-    recur= 0;
+    let visited = [startAt];
+
     console.group("Visited Nodes");
-    hamilUtil(graph, startAt, visited);
+    hamilUtil(graph, visited, blocked);
     console.groupEnd();
+    console.log("countChecked: " + countChecked);
     return hamilPaths;
 }
 
+const lastElement = (arr) => arr[arr.length - 1]
+let countChecked = 0;
 
-let hamilPaths = [];
-//Prevent stack overflow from recursion
-let recurLimit = 1000;
-let hamilLimit= 300;
-let recur= 0;
-
-//This functions job is to place hamilCycles into hamilPaths a
-function hamilUtil(graph, node = 0, visited = [], justBeenThere = -1) {
-    let visitedNodes = [...visited] //Allow visited to be unique and thread safe for each recursion
-
-    if(isHamilCycle(graph, visitedNodes)) {
-        hamilPaths.push(visitedNodes);
-        console.log("Hamiltonian Cycle found: ", visitedNodes);
+function hamilUtil(graph, path = [0], blocked = []) {
+    if (isHamilCycle(path)) {
+        hamilPaths.push(path);
+        // console.log("Found Hamil Yayy: ", path)
         return;
     }
 
-    if(visitedNodes.length > graph.V.length) {
-        console.error("Every vertex has been visited. Cannot find path.");
-        console.log("Visited Nodes: ", visitedNodes);
-        //Backtrack to find other paths.
-        // Recall that the last node in visitedNodes is the current node being visited so remove it
-        hamilUtil(graph, visitedNodes[visitedNodes.length - 2], visitedNodes.slice(0, -1), node);
-    }
-
-    if(hamilPaths.length >= hamilLimit) {
-        console.log("Hamiltonian Paths is full. Stopping now.");
+    if (path.length > graph.rows * graph.cols + 1)
         return;
-    }
 
-    if(recur >= recurLimit) {
-        console.error("Recursion recurLimit reached. Cannot find path.");
-        return;
-    }
+    const startLoc = path[0];
+    const prevLoc = (path.length >= 2) ? path[path.length - 2] : null;
+    const node = graph.V[lastElement(path)];
 
-    let paths = [];
-    for (let testNode of graph.V[node].edges) {
-        if(!visitedNodes.includes(testNode)) {
-            if(justBeenThere === testNode) {
-                console.log("Backtracked from ", justBeenThere, " to try ", testNode, " at node ", node);
-                continue;
-            }
-            recur++;
-            hamilUtil(graph, testNode, [...visitedNodes, testNode]);
+    for (let edge of node.edges) {
+        if (edge === prevLoc) continue;
+        // console.log("node: " + node.location +  " -> edge: " + edge + "-> path: " + path)
+        if (!path.slice(1).includes(edge) && !blocked.includes(edge)) {
+            let newPath = [...path, edge];
+            countChecked++;
+            hamilUtil(graph, newPath, blocked);
         }
     }
+}
+
+function isHamilCycle(path = []) {
+    if (path.length < 4)
+        return false;
+
+    let noDuplicates = containsDuplicates(path.slice(1))
+    let endWithStart = path[0] === path[path.length - 1];
+    // console.log(noDuplicates + " " + endWithStart + " : " + path[0] + " == "+ path[path.length - 1])
+    return (noDuplicates && endWithStart);
+}
+
+function containsDuplicates(path) {
+    //Check if array contains any duplicates
+    for (let i = 0; i <= path.length - 2; i++) {
+        if (path.slice(i + 1).includes(path[i]))
+            return false;
+    }
+    return true;
 }
