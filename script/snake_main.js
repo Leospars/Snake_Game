@@ -8,8 +8,8 @@
 
 //Field
 const gridSize = 20;
-const cols = 15;
-const rows = 15;
+const cols = 4;
+const rows = 4;
 let field; 
 
 //snake
