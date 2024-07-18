@@ -54,16 +54,15 @@ function snakeBestAI() {
 }
 
 function bestPathToApple() {
-    //Generate Hamiltonian Cycle
     let graph = new GridGraph(rows, cols);
-    let snakeHeadGridNumber = coordToGridNum(snake.head);
-    let appleGridPos = coordToGridNum([appleX, appleY]);
+    let snakeHeadGridNum = coordToGridNum(snake.head);
+    let appleGridNum = coordToGridNum([appleX, appleY]);
     let snakeBodyGrid = snake.body.map((pos) => coordToGridNum(pos));
     let block = snakeBodyGrid.slice(0,-1); //Exclude tail end because head cannot hit the tail end
-    console.log("Snake Head GridNum: ", snakeHeadGridNumber, "Apple GridPos: ", appleGridPos, "Blocks: ", block);
+    console.log("Snake Head GridNum: ", snakeHeadGridNum, "Apple GridPos: ", appleGridNum, "Blocks: ", block);
 
-    let shortestPath = shortestPathToApple(graph, snakeHeadGridNumber, appleGridPos, block);
-    console.log("Shortest Path: ", shortestPath, " from " + snakeHeadGridNumber + " to " + appleGridPos);
+    let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, block);
+    console.log("Shortest Path: ", shortestPath, " from " + snakeHeadGridNum + " to " + appleGridNum);
     return shortestPath;
 
     // let hamilPath = bestHamiltonianCycle(graph, snakeHeadGridNumber, appleGridPos);
@@ -132,22 +131,30 @@ function bestHamiltonianCycle(graph, snakeHeadGridNumber, appleGridPos) {
     pathsTried = 0;
     console.groupEnd();
 
-    let bestPath = hamilPaths[0];
-    for (let i = 0; i < hamilPaths.length; i++) {
-        path = hamilPaths[i];
-        if (path.includes(appleGridPos)) {
-            console.log("Sire 🙋 there is an apple my gridPath: gridPath ");
+    let bestPath = evalBestHamilPath(hamilPaths, appleGridPos);
+    return bestPath
+}
 
-            if (bestPath.includes(appleGridPos)) {
+let pathWapple = 0;
+
+///@desc Finds the shortest path where the snake eats the apple and return it
+function evalBestHamilPath(hamilPaths = [[]], appleGridNum) {
+    let bestPath = hamilPaths[0];
+    pathWapple = 0;
+    hamilPaths.forEach((path) => {
+        if (path.includes(appleGridNum)) {
+            pathWapple++;
+
+            if (bestPath.includes(appleGridNum)) {
                 if (path.length < bestPath.length)
                     bestPath = path;
             } else
                 bestPath = path;
         }
-    }
+    })
+    console.log("paths with apple: " + pathWapple, "Percentage: " + pathWapple / hamilPaths.length * 100);
     return bestPath;
 }
-
 function generateHamiltonianCycles(graph = new Graph(), startNode = 0, attempts = cols) {
     let hamilPaths = [];
     tryPaths(graph, startNode);
