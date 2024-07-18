@@ -131,3 +131,10 @@ button:active {
     color: blueviolet;
     transform: scale(0.95);
 }
+
+.logStyle {
+    font-family: Arial;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: beige;
+}
