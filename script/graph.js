@@ -1,4 +1,4 @@
-export class Vertex {
+class Vertex {
     location = 0;
     edges = [];
 
@@ -18,22 +18,24 @@ class Graph{
     }
 }
 
-export class GridGraph extends Graph {
+class GridGraph extends Graph {
     rows = 0;
     cols = 0;
+    size = [];
 
     constructor(_rows = rows, _cols = cols) {
         super();
         this.rows = _rows;
         this.cols = _cols;
+        this.size = [this.rows, this.cols];
 
         let V = {};
         for(let i = 0; i < _rows; i++){
             for(let j = 0; j < _cols; j++){
-                let v = i + j * _cols;
+                let v = j + i * _cols;
                 let edge = [];
                 if(v % _cols !== 0) edge.push(v - 1); //if not left border add left edge
-                if(v % _cols < _rows - 1) edge.push(v + 1); //if not right border add right edge
+                if (v % _cols < _cols - 1) edge.push(v + 1); //if not right border add right edge
                 if (v >= _cols) edge.push(v - _cols); //top border
                 if (v < _rows * _cols - _cols) edge.push(v + _cols); //bottom border
                 V[v] = new Vertex(v, edge);
@@ -53,7 +55,7 @@ export class GridGraph extends Graph {
      *       or not and just create child classes with overrides.
      */
 
-    aStarSearch(startAt, search, block = []){
+    static aStarSearch(startAt, search, block = []) {
         let path = [];
         let blockedNodes = block.slice(); //Allow blocks to be thread safe
         let aStarSearchUtil = (startAt, search, blocks) => {
@@ -107,8 +109,8 @@ export class GridGraph extends Graph {
 
         return aStarSearchUtil(startAt, search, blockedNodes);
     }
-    
-    distBetweenNodes = (a, b) => {
+
+    static distBetweenNodes = (a, b) => {
         const gridNumToPoint = (gridNumber) => {
             let xPos = (gridNumber % this.cols) * this.grid;
             let yPos = Math.floor(gridNumber / this.cols) * this.grid;
@@ -130,8 +132,10 @@ class Point {
         this.y = y;
     }
 
+    /// @deprecated
     toCoord = () => [this.x, this.y];
-    dist(p) {
+
+    static dist(p) {
         return Math.sqrt((this.x - p.x) ** 2 + (this.y - p.y) ** 2);
     }
 }
