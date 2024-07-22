@@ -21,8 +21,24 @@ function hamilUtilSnakeOpt(
         bestPath = [];
     }
 
+    //Ensures the function in for loops end if the resulting path will be longer than the shortest path with the apple
+    if (optimize.findApple && bestPath.length !== 0 && path.length > bestPath.length) return;
+
     if (isHamilCycle(path)) {
         hamilPaths.push(path);
+        if (optimize.findApple && path.includes(appleGridNum)) {
+            pathWapple++;
+
+            if (bestPath.length === 0) {
+                bestPath = path
+                console.log("First bestPath: ", bestPath);
+            }
+            ;
+            if (path.length < bestPath.length) {
+                bestPath = path;
+                console.log("Change bestPath: ", bestPath);
+            }
+        }
         return;
     }
 
