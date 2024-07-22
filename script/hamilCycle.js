@@ -3,8 +3,8 @@ const lastElement = (arr) => arr[arr.length - 1]
 let countChecked = 0;
 
 //Function that finds all possible Hamiltonian Cycles and stores them in hamilPaths
-function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], snakeGame =
-    {snakeBlock: [], appleGridNum: -1, optimize: {graph: true, findApple: true}}) {
+async function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], snakeGame =
+    {snakeBlock: [], appleGridNum: -1, optimize: {graph: true, findApple: true, async: true}}) {
 
     if (!(startAt in graph.V) || !(snakeGame.appleGridNum in graph.V)) {
         throw new Error("Node not in graph.");
@@ -18,7 +18,7 @@ function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], sn
     console.group("HamilUtil Run");
     console.time("hamilCycle");
     (snakeGame.snakeBlock.length !== 0) ?
-        hamilUtilSnakeOpt({
+        await hamilUtilSnakeOpt({
             graph: graph, path: visited, block: blocked,
             snakeBlock: snakeGame.snakeBlock,
             appleGridNum: snakeGame.appleGridNum,

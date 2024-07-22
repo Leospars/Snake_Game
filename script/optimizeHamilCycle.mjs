@@ -2,14 +2,14 @@
 
 let bestPath = [];
 
-function hamilUtilSnakeOpt(
+async function hamilUtilSnakeOpt(
     {
         graph = new GridGraph(3, 3),
         path = [0],
         block = [],
         snakeBlock = [],
         appleGridNum = -1,
-        optimize = {graph: true, findApple: true}
+        optimize = {graph: true, findApple: true, async: true}
     }
 ) {
     //on first run
@@ -31,12 +31,12 @@ function hamilUtilSnakeOpt(
 
             if (bestPath.length === 0) {
                 bestPath = path
-                console.log("First bestPath: ", bestPath);
+                // console.log("First bestPath: ", bestPath);
             }
-            ;
+
             if (path.length < bestPath.length) {
                 bestPath = path;
-                console.log("Change bestPath: ", bestPath);
+                // console.log("Change bestPath: ", bestPath);
             }
         }
         return;
@@ -58,14 +58,23 @@ function hamilUtilSnakeOpt(
             newSnakeBlock.unshift(node.location); //Move virtual snake forward after "popping" snakeBlock earlier
 
             countChecked++;
-            hamilUtilSnakeOpt({
+            (optimize.async) ? hamilUtilSnakeOpt({
                 graph: graph,
                 path: newPath,
                 block: block,
                 snakeBlock: newSnakeBlock,
                 appleGridNum: appleGridNum,
                 optimize: optimize
-            });
+                }) :
+                await hamilUtilSnakeOpt({
+                    graph: graph,
+                    path: newPath,
+                    block: block,
+                    snakeBlock: newSnakeBlock,
+                    appleGridNum: appleGridNum,
+                    optimize: optimize
+                })
+            ;
         }
     }
 }
