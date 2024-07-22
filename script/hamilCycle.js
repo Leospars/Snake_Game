@@ -1,37 +1,39 @@
-//Function that finds all possible Hamiltonian Cycles and stores them in hamilPaths
-
 let hamilPaths = [];
+const lastElement = (arr) => arr[arr.length - 1]
+let countChecked = 0;
 
-function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], snakeBlock = [], appleGridNum = -1) {
-    //Check if startAt and search are in the graph
-    console.time("hamilCycle")
-    countChecked = 0;
+//Function that finds all possible Hamiltonian Cycles and stores them in hamilPaths
+function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], snakeGame =
+    {snakeBlock: [], appleGridNum: -1, optimize: {graph: true, findApple: true}}) {
 
-    if (!(startAt in graph.V)) {
-        new Error("Node not in graph.");
+    if (!(startAt in graph.V) || !(snakeGame.appleGridNum in graph.V)) {
+        throw new Error("Node not in graph.");
         return [];
     }
 
+    countChecked = 0;
     hamilPaths = [];
     let visited = [startAt];
 
-    console.group("Visited Nodes");
-    (snakeBlock !== []) ?
-        hamilUtilSnake(graph, visited, blocked, snakeBlock, appleGridNum) :
+    console.group("HamilUtil Run");
+    console.time("hamilCycle");
+    (snakeGame.snakeBlock.length !== 0) ?
+        hamilUtilSnakeOpt({
+            graph: graph, path: visited, block: blocked,
+            snakeBlock: snakeGame.snakeBlock,
+            appleGridNum: snakeGame.appleGridNum,
+            optimize: snakeGame.optimize
+        }) :
         hamilUtil(graph, visited, blocked);
-
-    console.groupEnd();
     console.log("countChecked: " + countChecked);
     console.timeEnd("hamilCycle")
+
     console.time("Cull Paths")
-    console.log("paths with apple: " + pathWapple, "Percentage: " + pathWapple / hamilPaths.length * 100);
-    console.log("bestPath: ", evalBestHamilPath(hamilPaths, appleGridNum));
+    console.log("bestPath: ", evalBestHamilPath(hamilPaths, snakeGame.appleGridNum));
     console.timeEnd("Cull Paths")
+    console.groupEnd();
     return hamilPaths;
 }
-
-const lastElement = (arr) => arr[arr.length - 1]
-let countChecked = 0;
 
 function hamilUtil(graph, path = [0], blocked = []) {
     if (isHamilCycle(path)) {
