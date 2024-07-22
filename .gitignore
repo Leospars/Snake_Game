@@ -2,3 +2,4 @@ database
 .idea
 .vscode
 /script/*.ts
+.cpp

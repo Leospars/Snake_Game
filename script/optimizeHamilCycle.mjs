@@ -1,25 +1,24 @@
 /// @param snakeBlock - A block that dynamically moves along the path to simulate the snake's body
-var log = {
-    el: document.getElementById("log"),
-    d: (str) => {
-        log.el.innerHTML += (str)
-    }
-};
 
 let bestPath = [];
 
-function hamilUtilSnake(graph, path = [0], block = [], snakeBlock = [], appleGridNum = -1) {
+function hamilUtilSnakeOpt(
+    {
+        graph = new GridGraph(3, 3),
+        path = [0],
+        block = [],
+        snakeBlock = [],
+        appleGridNum = -1,
+        optimize = {graph: true, findApple: true}
+    }
+) {
     //on first run
-    if (path.length === 1) {
+    if (path.length === 1 && optimize.graph) {
         if (appleGridNum !== -1)
             graph = optimizeGraph(graph, snakeBlock, appleGridNum);
-        console.log("Graph: ", graph);
-        log.d("<br>Loading. ");
+        console.log("Optimized Graph Size: " + graph.size);
         pathWapple = 0;
-    }
-
-    if (countChecked % 10000 === 0) {
-        log.d(". ");
+        bestPath = [];
     }
 
     if (isHamilCycle(path)) {
@@ -27,26 +26,30 @@ function hamilUtilSnake(graph, path = [0], block = [], snakeBlock = [], appleGri
         return;
     }
 
-    if (path.length > graph.rows * graph.cols + 1)
-        return;
-
-    const startLoc = path[0];
     const prevLoc = (path.length >= 2) ? path[path.length - 2] : null;
     const node = graph.V[lastElement(path)];
 
     for (let edge of node.edges) {
         if (edge === prevLoc) continue;
 
-        if (!path.slice(1).includes(edge) && !block.includes(edge) && !snakeBlock.includes(edge)) {
+        //remove last element without changing snakeBlock for virtual snake to move
+        let newSnakeBlock = snakeBlock.slice(0, -1);
+        if (!path.slice(1).includes(edge) && !block.includes(edge) && !newSnakeBlock.includes(edge)) {
             // console.log("node: " + node.location +  " -> edge: " + edge + "-> path: " + path)
             let newPath = [...path, edge];
 
             //MOVE SNAKE
-            let newSnakeBlock = snakeBlock.slice(0, -1); //pop without changing snakeBlock
-            newSnakeBlock.unshift(node.location); //Move snake foward
+            newSnakeBlock.unshift(node.location); //Move virtual snake forward after "popping" snakeBlock earlier
 
             countChecked++;
-            hamilUtilSnake(graph, newPath, block, newSnakeBlock);
+            hamilUtilSnakeOpt({
+                graph: graph,
+                path: newPath,
+                block: block,
+                snakeBlock: newSnakeBlock,
+                appleGridNum: appleGridNum,
+                optimize: optimize
+            });
         }
     }
 }
@@ -74,4 +77,3 @@ function optimizeGraph(graph, snakeBlock, appleGridNum) {
         (furthest_col < apple_col) ? furthest_col = apple_col : furthest_col += 1;
     return new GridGraph(furthest_row, furthest_col);
 }
-
