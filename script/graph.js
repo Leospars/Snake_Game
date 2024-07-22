@@ -2,16 +2,16 @@ class Vertex {
     location = 0;
     edges = [];
 
-    constructor(v, edge){
+    constructor(v, edge) {
         this.location = v;
         this.edges = edge;
     }
 }
 
-class Graph{
+class Graph {
     V = {};
 
-    constructor(Vs = [new Vertex()]){
+    constructor(Vs = [new Vertex()]) {
         Vs.forEach(v => {
             this.V[v.location] = v;
         });
@@ -30,11 +30,11 @@ class GridGraph extends Graph {
         this.size = [this.rows, this.cols];
 
         let V = {};
-        for(let i = 0; i < _rows; i++){
-            for(let j = 0; j < _cols; j++){
+        for (let i = 0; i < _rows; i++) {
+            for (let j = 0; j < _cols; j++) {
                 let v = j + i * _cols;
                 let edge = [];
-                if(v % _cols !== 0) edge.push(v - 1); //if not left border add left edge
+                if (v % _cols !== 0) edge.push(v - 1); //if not left border add left edge
                 if (v % _cols < _cols - 1) edge.push(v + 1); //if not right border add right edge
                 if (v >= _cols) edge.push(v - _cols); //top border
                 if (v < _rows * _cols - _cols) edge.push(v + _cols); //bottom border
@@ -63,16 +63,16 @@ class GridGraph extends Graph {
             let closestNode = -1;
 
             //Check if startAt and search are nodes in the graph
-            if(!(startAt in this.V) || !(search in this.V)){
+            if (!(startAt in this.V) || !(search in this.V)) {
                 new Error("Node not in graph.");
                 return [];
             }
 
-            if(path.length === 0) {
+            if (path.length === 0) {
                 path.push(startAt);
-                if(startAt == search) return path;
+                if (startAt == search) return path;
             }
-            if(path.length > this.V.length) {
+            if (path.length > this.V.length) {
                 console.error("Every vertex has been visited. Cannot find path.");
                 return [];
             } //Prevent stack overflow from recursion
@@ -80,20 +80,20 @@ class GridGraph extends Graph {
             if (startAt === search) return path;
 
             for (let node of this.V[startAt].edges) {
-                if(blocks.includes(node)){
-                    if(!(node === startAt))
+                if (blocks.includes(node)) {
+                    if (!(node === startAt))
                         // console.log(startAt + " Node: ", node, " is blocked.");
-                    continue;
+                        continue;
                 }
 
                 let distance = this.distBetweenNodes(search, node);
-                if(distance < shortestDist){
+                if (distance < shortestDist) {
                     shortestDist = distance;
                     closestNode = node;
                 }
             }
 
-            if(closestNode === -1){
+            if (closestNode === -1) {
                 console.error("Cannot move to node, currently enclosed.", path);
                 return [];
             }
@@ -132,10 +132,10 @@ class Point {
         this.y = y;
     }
 
-    /// @deprecated
-    toCoord = () => [this.x, this.y];
-
     static dist(p) {
         return Math.sqrt((this.x - p.x) ** 2 + (this.y - p.y) ** 2);
     }
+
+    /// @deprecated
+    toCoord = () => [this.x, this.y];
 }
