@@ -58,7 +58,7 @@ function bestPathToApple() {
     let snakeHeadGridNum = coordToGridNum(snake.head);
     let appleGridNum = coordToGridNum([appleX, appleY]);
     let snakeBodyGrid = snake.body.map((pos) => coordToGridNum(pos));
-    let block = snakeBodyGrid.slice(0,-1); //Exclude tail end because head cannot hit the tail end
+    let block = snakeBodyGrid.slice(0, -1); //Exclude tail end because head cannot hit the tail end
     console.log("Snake Head GridNum: ", snakeHeadGridNum, "Apple GridPos: ", appleGridNum, "Blocks: ", block);
 
     let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, block);
@@ -86,7 +86,7 @@ function findAltPathToApple(graph, headGridPos, appleGridPos, block = []) {
         shortestPath = graph.aStarSearch(node, appleGridPos, block);
         block.unshift(node);
         block.pop();
-        if(shortestPath.length > 0) {
+        if (shortestPath.length > 0) {
             console.log("Path to Apple: ", shortestPath, " from index" + i + " : node " + node);
             return true;
         }
@@ -113,7 +113,7 @@ function shortestPathToApple(graph, headGridPos, appleGridPos, block = []) {
         shortestPath = findAltPathToApple(graph, headGridPos, appleGridPos, block);
         console.log("Shortest Path after considering Tail Path: ", shortestPath);
     }
-    if(shortestPath.length === 0)
+    if (shortestPath.length === 0)
         pause_play(); //Pause the game if no path is found.
     return shortestPath;
 }
@@ -155,6 +155,7 @@ function evalBestHamilPath(hamilPaths = [[]], appleGridNum) {
     console.log("paths with apple: " + pathWapple, "Percentage: " + pathWapple / hamilPaths.length * 100);
     return bestPath;
 }
+
 function generateHamiltonianCycles(graph = new Graph(), startNode = 0, attempts = cols) {
     let hamilPaths = [];
     tryPaths(graph, startNode);

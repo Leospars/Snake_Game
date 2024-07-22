@@ -59,12 +59,12 @@ async function hamilUtilSnakeOpt(
 
             countChecked++;
             (optimize.async) ? hamilUtilSnakeOpt({
-                graph: graph,
-                path: newPath,
-                block: block,
-                snakeBlock: newSnakeBlock,
-                appleGridNum: appleGridNum,
-                optimize: optimize
+                    graph: graph,
+                    path: newPath,
+                    block: block,
+                    snakeBlock: newSnakeBlock,
+                    appleGridNum: appleGridNum,
+                    optimize: optimize
                 }) :
                 await hamilUtilSnakeOpt({
                     graph: graph,

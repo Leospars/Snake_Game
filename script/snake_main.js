@@ -10,7 +10,7 @@
 const gridSize = 20;
 const cols = 14;
 const rows = 14;
-let field; 
+let field;
 
 //snake
 var snake = new Snake();
@@ -21,18 +21,29 @@ var appleX, appleY;
 //Game logic
 let gameOver = false,
     paused = false;
-    score = 0,
+score = 0,
     highScore = 0;
 let gameUpdate;
-let frameRate = 1000/10; //100fps
+let frameRate = 1000 / 10; //100fps
 let initialFrameRate = frameRate;
 let frame = 0;
 
 //Move Snake Functions
-function moveRight(snakeObj = snake){ snakeObj.velocity(1,0);}
-function moveLeft(snakeObj = snake){ snakeObj.velocity(-1,0);}
-function moveUp(snakeObj = snake){ snakeObj.velocity(0,-1);}
-function moveDown(snakeObj = snake){ snakeObj.velocity(0,1);}
+function moveRight(snakeObj = snake) {
+    snakeObj.velocity(1, 0);
+}
+
+function moveLeft(snakeObj = snake) {
+    snakeObj.velocity(-1, 0);
+}
+
+function moveUp(snakeObj = snake) {
+    snakeObj.velocity(0, -1);
+}
+
+function moveDown(snakeObj = snake) {
+    snakeObj.velocity(0, 1);
+}
 
 //AI variables
 var run_AI_Pref_Dir = false;
@@ -41,63 +52,66 @@ var showGridlines = false;
 
 //Field
 field = document.getElementById("field");
-    field.height = gridSize*rows;
-    field.width = gridSize*cols;
+field.height = gridSize * rows;
+field.width = gridSize * cols;
 
 //Canvas
 let context = field.getContext("2d");
 
-window.onload = function() {
+window.onload = function () {
     //Keyboard Listeners
     document.body.addEventListener("keyup", spacebarPause);
     document.addEventListener("keyup", changeDirection);
-    
+
     //Focus on canvas when window loads
     field.focus();
-    
+
     //Initialize Buttons
     setButtonEvents();
-    
+
     //AI buttons
-    new Button("ai_hc").click(function() {
-        if(run_AI_Pref_Dir) run_AI_Pref_Dir = !run_AI_Pref_Dir;
+    new Button("ai_hc").click(function () {
+        if (run_AI_Pref_Dir) run_AI_Pref_Dir = !run_AI_Pref_Dir;
         run_AI_Hamil_Cycle = !run_AI_Hamil_Cycle;
         console.log("AI_HC: ", run_AI_Hamil_Cycle);
     });
-    new Button("ai_pref_dir").click(function(){
-        if(run_AI_Hamil_Cycle) run_AI_Hamil_Cycle = !run_AI_Hamil_Cycle;
+    new Button("ai_pref_dir").click(function () {
+        if (run_AI_Hamil_Cycle) run_AI_Hamil_Cycle = !run_AI_Hamil_Cycle;
         run_AI_Pref_Dir = toggle(run_AI_Pref_Dir);
         console.log("AI_Pref_Dir: ", run_AI_Pref_Dir);
     });
-    
+
     //Initialize Game
     snake.initializePosition();
     placeApple();
-    gameUpdate = setInterval( newFrame, frameRate);
+    gameUpdate = setInterval(newFrame, frameRate);
 }
-function newFrame(){
+
+function newFrame() {
     window.requestAnimationFrame(update);
 }
-function toggle(bool){
+
+function toggle(bool) {
     return !bool;
 }
-function refreshAnimation(){
+
+function refreshAnimation() {
     clearInterval(gameUpdate);
-    gameUpdate = setInterval( newFrame, frameRate);
+    gameUpdate = setInterval(newFrame, frameRate);
 }
 
 function update() {
-    if(gameOver) {
-        snake.velocity(0,0);    
+    if (gameOver) {
+        snake.velocity(0, 0);
         return;
     }
 
-    if(frame === 0){
+    if (frame === 0) {
         console.log("Do tha thang.")
         pause_play();
     }
-    
-    if(!paused) {
+
+    if (!paused) {
         frame++;
 
         //Draw Field
@@ -108,7 +122,7 @@ function update() {
         // context.fillStyle = "white";
         // context.clearRect(0, 0, field.width, field.height);
         // context.fillRect(0, 0, field.width, field.height);
-        if(showGridlines) {
+        if (showGridlines) {
             context.strokeStyle = "grey";
             for (let i = 0; i < field.height; i++) {
                 context.moveTo(0, gridSize * i);
@@ -159,38 +173,38 @@ function update() {
             // frameRate = Math.max(frameRate*0.95, 50);
             console.log("frameRate: ", frameRate, "ms\nscore: ", score);
 
-            snake.body.push([-1,-1]);
+            snake.body.push([-1, -1]);
             placeApple();
             context.fillStyle = "red";
             context.fillRect(appleX, appleY, gridSize, gridSize)
         }
     }
 
-    if(snake.body.length ===  rows*cols+1){
-        document.getElementById( "GameOver").innerHTML = "YOU WON 🥳\n Best High Score";
+    if (snake.body.length === rows * cols + 1) {
+        document.getElementById("GameOver").innerHTML = "YOU WON 🥳\n Best High Score";
         field.classList.add('hidden');
         gameOver = true;
         console.log("YOU WON :)");
         return;
     }
 
-    if(isSnakeCollide(snake.head)) {
+    if (isSnakeCollide(snake.head)) {
         gameOver = true;
         document.getElementById("GameOver").innerHTML = "Game Over";
     }
 
-    if(isSuperSpeedOn){
+    if (isSuperSpeedOn) {
         window.requestAnimationFrame(update);
     }
 }
 
 //GameOver Conditions
 //Out of Bounds or Snake hits itself
-function isSnakeCollide([testX, testY] = snake.head, blocks = snake.body){
+function isSnakeCollide([testX, testY] = snake.head, blocks = snake.body) {
     if (isOutsideField([testX, testY]))
         return true;
-    for (let i= 0; i<blocks.length; i++) {
-        if(testX == blocks[i][0] && testY == blocks[i][1]) {
+    for (let i = 0; i < blocks.length; i++) {
+        if (testX == blocks[i][0] && testY == blocks[i][1]) {
             // console.log("why are you hitting yourself");
             return true;
         }
@@ -198,14 +212,14 @@ function isSnakeCollide([testX, testY] = snake.head, blocks = snake.body){
     return false;
 }
 
-function isOutsideField([testX, testY], xBoundary = [0,field.width], yBoundary = [0,field.height]){
-    return (testX < xBoundary[0] || testX >= xBoundary[1] || testY < yBoundary[0]  || testY >= yBoundary[1]);
+function isOutsideField([testX, testY], xBoundary = [0, field.width], yBoundary = [0, field.height]) {
+    return (testX < xBoundary[0] || testX >= xBoundary[1] || testY < yBoundary[0] || testY >= yBoundary[1]);
 }
 
-function drawSnake(snakeObj = snake, headColor = "rgb(20,160,30)", bodyColor = "lime", grid = gridSize){
+function drawSnake(snakeObj = snake, headColor = "rgb(20,160,30)", bodyColor = "lime", grid = gridSize) {
     //Draw Snake Body new location
     context.fillStyle = bodyColor;
-    for (let i = 0; i <= snakeObj.body.length-1; i++) {
+    for (let i = 0; i <= snakeObj.body.length - 1; i++) {
         context.fillRect(snakeObj.body[i][0], snakeObj.body[i][1], grid, grid);
     }
 
@@ -217,8 +231,8 @@ function drawSnake(snakeObj = snake, headColor = "rgb(20,160,30)", bodyColor = "
 
 }
 
-function spacebarPause(event){
-    if(event.key == ' ' || event.code == 'Space' || event.keyCode ==32){
+function spacebarPause(event) {
+    if (event.key == ' ' || event.code == 'Space' || event.keyCode == 32) {
         console.log("Spacebar was clicked.")
         pause_play();
     }
@@ -226,6 +240,7 @@ function spacebarPause(event){
 
 let directionBuffer = [];
 let arrowKeyPressed = false;
+
 function changeDirection(event) {
     if (event.keyCode >= 37 && event.keyCode <= 40) {
         document.getElementById("pause_play").innerHTML = "⏸️";
@@ -246,14 +261,15 @@ function changeDirection(event) {
 }
 
 function rand(smallest, largest) {
-    return Math.floor(Math.random()*(largest+1-smallest) + smallest);
+    return Math.floor(Math.random() * (largest + 1 - smallest) + smallest);
 }
-function placeApple() {
-    randX = rand(0,cols-1) * gridSize;
-    randY = rand(0,rows-1) * gridSize;
 
-    for (let i=0; i<snake.body.length-1; i++) {
-        if(randX == snake.body[i][0] && randY == snake.body[i][1]){
+function placeApple() {
+    randX = rand(0, cols - 1) * gridSize;
+    randY = rand(0, rows - 1) * gridSize;
+
+    for (let i = 0; i < snake.body.length - 1; i++) {
+        if (randX == snake.body[i][0] && randY == snake.body[i][1]) {
             placeApple();
         }
     }
@@ -266,12 +282,12 @@ const appleWasAte = () => {
 }
 
 const isArraySame = (arr1, arr2) => {
-    if(arr1.length !== arr2.length)
+    if (arr1.length !== arr2.length)
         return false;
 
-    let isSame= false;
+    let isSame = false;
     for (let i = 0; i < arr1.length; i++) {
-        if(arr1[i] === arr2[i])
+        if (arr1[i] === arr2[i])
             isSame = true;
         else {
             isSame = false;
@@ -282,16 +298,16 @@ const isArraySame = (arr1, arr2) => {
     // return (JSON.stringify(arr1) === JSON.stringify(arr2))
 }
 
-const isSamePoint = (p1,p2) => {
-    return (p1[0] == p2[0] && p1[1]==p2[1]);
+const isSamePoint = (p1, p2) => {
+    return (p1[0] == p2[0] && p1[1] == p2[1]);
 }
 
-function outlineSnake(){
+function outlineSnake() {
     const snakeBody = snake.body;
-    let centerOffset = gridSize/2;
+    let centerOffset = gridSize / 2;
     context.strokeStyle = "grey";
-    let i =0;
-    context.moveTo(snakeBody[0][0] + centerOffset, snakeBody[i][1]+centerOffset);
-    context.lineTo(snakeBody[i+1][0]+centerOffset, snakeBody[i+1][1]+centerOffset);
+    let i = 0;
+    context.moveTo(snakeBody[0][0] + centerOffset, snakeBody[i][1] + centerOffset);
+    context.lineTo(snakeBody[i + 1][0] + centerOffset, snakeBody[i + 1][1] + centerOffset);
     context.stroke();
 }

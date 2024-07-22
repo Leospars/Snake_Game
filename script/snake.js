@@ -2,16 +2,16 @@
 // const {gridSize, cols, rows} = field_params;
 
 class Snake {
-    xPos; 
+    xPos;
     yPos;
     xVel = 0;
     yVel = 0;
-    head = [0,0];
+    head = [0, 0];
     body = [];
 
     //constructor for getting gridsize, rows and columns of field
     initializePosition(pos = [-1, -1]) {
-        if(pos[0] === -1 || pos[1] === -1) {
+        if (pos[0] === -1 || pos[1] === -1) {
             this.xPos = rand(3, cols / 4) * gridSize;
             this.yPos = rand(0, rows / 4) * gridSize;
         } else {
@@ -22,7 +22,7 @@ class Snake {
         this.body = [[this.xPos - gridSize, this.yPos], [this.xPos - gridSize * 2, this.yPos], [this.xPos - gridSize * 3, this.yPos]];
     }
 
-    velocity (horizontal = 0, vertical = 0){
+    velocity(horizontal = 0, vertical = 0) {
         this.xVel = horizontal;
         this.yVel = vertical;
     }
