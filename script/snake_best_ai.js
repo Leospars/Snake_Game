@@ -19,7 +19,7 @@ function snakeBestAI() {
         testSnake = cloneObject(snake, Snake);
         drawTestSnake();
 
-        snakePath = bestPathToApple().then((value) => console.log(value + " frame:" + frame));
+        snakePath = bestPathToApple();
         console.log("Best Path: ", snakePath);
         snakeVelPath = gridPathToSnakeVelPath(snakePath);
 
@@ -51,7 +51,7 @@ function snakeBestAI() {
     console.groupEnd();
 }
 
-async function bestPathToApple() {
+function bestPathToApple() {
     let graph = new GridGraph(rows, cols);
     let snakeHeadGridNum = coordToGridNum(snake.head);
     let appleGridNum = coordToGridNum([appleX, appleY]);
@@ -60,7 +60,7 @@ async function bestPathToApple() {
     // console.log("Snake Head GridNum: ", snakeHeadGridNum, "Apple GridPos: ", appleGridNum, "Blocks: ", block);
 
     if (run_Hamil_Algo) {
-        let hamilPath = await hamiltonianCycle(graph, snakeHeadGridNum, [],
+        let hamilPath = hamiltonianCycle(graph, snakeHeadGridNum, [],
             {
                 snakeBlock: snakeBodyGrid, appleGridNum: appleGridNum, optimize: {
                     async: true, findApple: true, graph: true

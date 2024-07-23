@@ -115,10 +115,8 @@ class GridGraph extends Graph {
 
     distBetweenNodes = (a, b) => {
         const gridNumToPoint = (gridNumber) => {
-            console.log("cols: ", this.cols, " grid: ", this.grid, " gridNumber: ", gridNumber);
             let xPos = (gridNumber % this.cols) * this.grid;
-            let yPos = Math.floor(gridNumber / this.cols) * this.grid;
-            console.log("Node: ", gridNumber, " X: ", xPos, " Y: ", yPos)
+            let yPos = Math.floor(gridNumber / this.cols) * this.grid;/* console.log("Node: ", gridNumber, " X: ", xPos, " Y: ", yPos) */
             return new Point(xPos, yPos);
         }
 
