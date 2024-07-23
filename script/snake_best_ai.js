@@ -1,7 +1,5 @@
 //HamiltonianCycle
-// noinspection EqualityComparisonWithCoercionJS
 
-let showLogs = true;
 let testSnake = new Snake();
 
 let drawTestSnake = () => {
@@ -11,6 +9,7 @@ let drawTestSnake = () => {
 let snakeVelPath = [];
 let frameSnakeStartsOn = 0;
 let is_running_BestSnakeAI = false;
+var run_Hamil_Algo = true;
 
 let snakePath = [];
 
@@ -20,7 +19,7 @@ function snakeBestAI() {
         testSnake = cloneObject(snake, Snake);
         drawTestSnake();
 
-        snakePath = bestPathToApple();
+        snakePath = bestPathToApple().then((value) => console.log(value + " frame:" + frame));
         console.log("Best Path: ", snakePath);
         snakeVelPath = gridPathToSnakeVelPath(snakePath);
 
@@ -35,8 +34,7 @@ function snakeBestAI() {
         frameSnakeStartsOn = frame + 1;
         is_running_BestSnakeAI = true;
         //delay for 2 seconds
-        setTimeout(() => {
-        }, 2000);
+        setTimeout(() => {}, 1000);
     } else {
         //Run a single movement command per frame until gridPath is complete
         let iterator = frame - frameSnakeStartsOn;
@@ -53,64 +51,38 @@ function snakeBestAI() {
     console.groupEnd();
 }
 
-function bestPathToApple() {
+async function bestPathToApple() {
     let graph = new GridGraph(rows, cols);
     let snakeHeadGridNum = coordToGridNum(snake.head);
     let appleGridNum = coordToGridNum([appleX, appleY]);
     let snakeBodyGrid = snake.body.map((pos) => coordToGridNum(pos));
     let block = snakeBodyGrid.slice(0, -1); //Exclude tail end because head cannot hit the tail end
-    console.log("Snake Head GridNum: ", snakeHeadGridNum, "Apple GridPos: ", appleGridNum, "Blocks: ", block);
+    // console.log("Snake Head GridNum: ", snakeHeadGridNum, "Apple GridPos: ", appleGridNum, "Blocks: ", block);
 
-    let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, block);
-    console.log("Shortest Path: ", shortestPath, " from " + snakeHeadGridNum + " to " + appleGridNum);
-    return shortestPath;
-
-    // let hamilPath = bestHamiltonianCycle(graph, snakeHeadGridNumber, appleGridPos);
-    // return hamilPath;
-}
-
-function findAltPathToApple(graph, headGridPos, appleGridPos, block = []) {
-    let shortestPath = [];
-    let snakeTail = snake.body[snake.body.length - 2]; // Apple was not ate
-
-    let tailGridPos = coordToGridNum(snakeTail);
-    console.log("Snake Body: ", snake.body);
-    console.log("Finding Tail Path from " + headGridPos + " to " + tailGridPos +
-        "\nUsing block: ", block, " and appleGridPos " + appleGridPos);
-    let tailPath = graph.aStarSearch(headGridPos, tailGridPos, block);
-    console.log("Tail Path: ", tailPath);
-
-    //An index in tail path where apple can be found
-    let pathToAppleFound = tailPath.findIndex((node, i) => {
-        //Block needs to be updated as the tail path moves
-        shortestPath = graph.aStarSearch(node, appleGridPos, block);
-        block.unshift(node);
-        block.pop();
-        if (shortestPath.length > 0) {
-            console.log("Path to Apple: ", shortestPath, " from index" + i + " : node " + node);
-            return true;
-        }
-        return shortestPath.length > 0;
-    });
-
-    if (pathToAppleFound > -1) {
-        shortestPath = [...tailPath.slice(0, pathToAppleFound), ...shortestPath];
+    if (run_Hamil_Algo) {
+        let hamilPath = await hamiltonianCycle(graph, snakeHeadGridNum, [],
+            {
+                snakeBlock: snakeBodyGrid, appleGridNum: appleGridNum, optimize: {
+                    async: true, findApple: true, graph: true
+                }
+            });
+        return hamilPath;
     } else {
-        ///TODO: Brainstorm a new solution maybe use back tracking instead.
-        //  if that  works implement it in hamiltonian cycle properly
-        shortestPath = tailPath;
+        let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, block);
+        console.log("Shortest Path: ", shortestPath, " from " + snakeHeadGridNum + " to " + appleGridNum);
+        return shortestPath;
     }
-    return shortestPath;
 }
 
-function shortestPathToApple(graph, headGridPos, appleGridPos, block = []) {
-    console.log("Block before A* Search: ", block);
-    let shortestPath = graph.aStarSearch(headGridPos, appleGridPos, block);
-    console.log("Block after A* Search: ", block);
+function shortestPathToApple(graph, headGridNum, appleGridNum, snakeGridBody = []) {
+    let gridBody = snakeGridBody.flat();
+    console.log("Block before A* Search: ", gridBody);
+    let shortestPath = graph.aStarSearch(headGridNum, appleGridNum, snakeGridBody);
+    console.log("Block after A* Search: ", gridBody);
     if (shortestPath.length === 0) {
         // Chase after tail until apple is found... hopefully lol. if possible
         console.error("Couldn't find apple, trying something new... going to chase tail.");
-        shortestPath = findAltPathToApple(graph, headGridPos, appleGridPos, block);
+        // shortestPath = findAltPathToApple(graph, headGridNum, appleGridNum, block);
         console.log("Shortest Path after considering Tail Path: ", shortestPath);
     }
     if (shortestPath.length === 0)

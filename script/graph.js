@@ -23,10 +23,11 @@ class GridGraph extends Graph {
     cols = 0;
     size = [];
 
-    constructor(_rows = rows, _cols = cols) {
+    constructor(_rows = rows, _cols = cols, _grid = gridSize) {
         super();
         this.rows = _rows;
         this.cols = _cols;
+        this.grid = _grid;
         this.size = [this.rows, this.cols];
 
         let V = {};
@@ -55,38 +56,40 @@ class GridGraph extends Graph {
      *       or not and just create child classes with overrides.
      */
 
-    static aStarSearch(startAt, search, block = []) {
+    aStarSearch(startAt, search, block = []) {
         let path = [];
-        let blockedNodes = block.slice(); //Allow blocks to be thread safe
-        let aStarSearchUtil = (startAt, search, blocks) => {
+        let blockedNodes = block.flat(); //Allow blocks to be thread safe
+        const aStarSearchUtil = (startAt, search, blocks) => {
             let shortestDist = Number.MAX_VALUE; //Allows for shortestDist to be first distance
             let closestNode = -1;
 
             //Check if startAt and search are nodes in the graph
             if (!(startAt in this.V) || !(search in this.V)) {
-                new Error("Node not in graph.");
+                throw new Error("Node not in graph.");
                 return [];
             }
 
+            if (path.length === this.rows * this.cols) {
+                throw new Error("Every vertex has been visited. Cannot find path.");
+                return [];
+            }  //Prevent stack overflow from recursion
+
+
             if (path.length === 0) {
                 path.push(startAt);
-                if (startAt == search) return path;
             }
-            if (path.length > this.V.length) {
-                console.error("Every vertex has been visited. Cannot find path.");
-                return [];
-            } //Prevent stack overflow from recursion
 
             if (startAt === search) return path;
 
             for (let node of this.V[startAt].edges) {
                 if (blocks.includes(node)) {
-                    if (!(node === startAt))
+                    // if (!(node === startAt))
                         // console.log(startAt + " Node: ", node, " is blocked.");
-                        continue;
+                    continue;
                 }
 
                 let distance = this.distBetweenNodes(search, node);
+                console.log("Node: ", node, " Distance: ", distance, " Shortest Distance: ", shortestDist);
                 if (distance < shortestDist) {
                     shortestDist = distance;
                     closestNode = node;
@@ -110,10 +113,12 @@ class GridGraph extends Graph {
         return aStarSearchUtil(startAt, search, blockedNodes);
     }
 
-    static distBetweenNodes = (a, b) => {
+    distBetweenNodes = (a, b) => {
         const gridNumToPoint = (gridNumber) => {
+            console.log("cols: ", this.cols, " grid: ", this.grid, " gridNumber: ", gridNumber);
             let xPos = (gridNumber % this.cols) * this.grid;
             let yPos = Math.floor(gridNumber / this.cols) * this.grid;
+            console.log("Node: ", gridNumber, " X: ", xPos, " Y: ", yPos)
             return new Point(xPos, yPos);
         }
 
@@ -132,7 +137,7 @@ class Point {
         this.y = y;
     }
 
-    static dist(p) {
+    dist(p) {
         return Math.sqrt((this.x - p.x) ** 2 + (this.y - p.y) ** 2);
     }
 
