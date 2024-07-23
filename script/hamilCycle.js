@@ -29,10 +29,10 @@ async function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = 
     console.timeEnd("hamilCycle")
 
     console.time("Cull Paths")
-    console.log("bestPath: ", evalBestHamilPath(hamilPaths, snakeGame.appleGridNum));
+    console.log("bestPath: ", bestPath = evalBestHamilPath(hamilPaths, snakeGame.appleGridNum));
     console.timeEnd("Cull Paths")
     console.groupEnd();
-    return hamilPaths;
+    return bestPath;
 }
 
 function hamilUtil(graph, path = [0], blocked = []) {
