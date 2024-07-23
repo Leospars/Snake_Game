@@ -1,15 +1,13 @@
 //Remember \Snake_GM\snakeAI_Pref_Dir.js
 /* - - - - - - - - - 
-  SNAKE GAME SOLID
+  SNAKE GAME MAIN
  - - - - - - - - - */
-/* Basic Snake Game no additions or extra */
-
-// import {Snake} from "./snake.js";
+/* Basic Snake Game with auto win */
 
 //Field
 const gridSize = 20;
-const cols = 14;
-const rows = 14;
+const cols = 6;
+const rows = 6;
 let field;
 
 //snake
@@ -47,7 +45,7 @@ function moveDown(snakeObj = snake) {
 
 //AI variables
 var run_AI_Pref_Dir = false;
-var run_AI_Hamil_Cycle = false;
+var run_AI_Find_Path = false;
 var showGridlines = false;
 
 //Field
@@ -68,18 +66,6 @@ window.onload = function () {
 
     //Initialize Buttons
     setButtonEvents();
-
-    //AI buttons
-    new Button("ai_hc").click(function () {
-        if (run_AI_Pref_Dir) run_AI_Pref_Dir = !run_AI_Pref_Dir;
-        run_AI_Hamil_Cycle = !run_AI_Hamil_Cycle;
-        console.log("AI_HC: ", run_AI_Hamil_Cycle);
-    });
-    new Button("ai_pref_dir").click(function () {
-        if (run_AI_Hamil_Cycle) run_AI_Hamil_Cycle = !run_AI_Hamil_Cycle;
-        run_AI_Pref_Dir = toggle(run_AI_Pref_Dir);
-        console.log("AI_Pref_Dir: ", run_AI_Pref_Dir);
-    });
 
     //Initialize Game
     snake.initializePosition();
@@ -153,7 +139,7 @@ function update() {
         if (run_AI_Pref_Dir === true) {
             snakeAI_Pref_Dir(xDistToApple, yDistToApple);
         }
-        if (run_AI_Hamil_Cycle === true) {
+        if (run_AI_Find_Path === true) {
             // console.time("hamilCycleFunc");
             snakeBestAI();
             // pause_play();

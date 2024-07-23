@@ -3,6 +3,8 @@
 class Button{
     idName;
     id = null;
+
+    //Add button to UI if it doesn't exist
     constructor(id){
         this.id = document.getElementById(id);
         this.idName = id;
@@ -28,6 +30,24 @@ let setButtonEvents = function() {
 
     let pauseButton = new Button("pause_play");
     pauseButton.click(pause_play);
+
+    //AI buttons
+    new Button("ai_hc").click(function () {
+        if (run_AI_Pref_Dir) run_AI_Pref_Dir = !run_AI_Pref_Dir;
+        run_AI_Find_Path = !run_AI_Find_Path;
+        console.log("AI_Find_Path: ", run_AI_Find_Path, " Algo: ", (run_Hamil_Algo) ? "Hamil Cycle" : "A*");
+    });
+
+    new Button("ai_pref_dir").click(function () {
+        if (run_AI_Find_Path) run_AI_Find_Path = !run_AI_Find_Path;
+        run_AI_Pref_Dir = toggle(run_AI_Pref_Dir);
+        console.log("AI_Pref_Dir: ", run_AI_Pref_Dir);
+    });
+
+    new Button("toggleAI").click(() => {
+        run_Hamil_Algo = !run_Hamil_Algo;
+        console.log("AI Algo: ", (run_Hamil_Algo) ? "Hamil Cycle" : "A*");
+    });
 
     let gridlineButton = new Button("gridlines");
     gridlineButton.click(() => (showGridlines = !showGridlines));
@@ -95,8 +115,6 @@ function pause_play(){
         snake.velocity(0,0);
         console.log("Paused");
         document.getElementById("pause_play").innerHTML="▶️";
-        // run_AI_Pref_Dir = false;
-        // run_AI_Hamil_Cycle = false;
         paused = true;
     }
 
