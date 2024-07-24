@@ -8,18 +8,14 @@
 const gridSize = 20;
 const cols = 6;
 const rows = 6;
-let field;
 
-//snake
-var snake = new Snake();
-
-//apple
-var appleX, appleY;
+let snake = new Snake(); //snake
+let appleX, appleY; //apple
 
 //Game logic
 let gameOver = false,
-    paused = false;
-score = 0,
+    paused = false,
+    score = 0,
     highScore = 0;
 let gameUpdate;
 let frameRate = 1000 / 10; //100fps
@@ -27,42 +23,34 @@ let initialFrameRate = frameRate;
 let frame = 0;
 
 //Move Snake Functions
-function moveRight(snakeObj = snake) {
-    snakeObj.velocity(1, 0);
-}
-
-function moveLeft(snakeObj = snake) {
-    snakeObj.velocity(-1, 0);
-}
-
-function moveUp(snakeObj = snake) {
-    snakeObj.velocity(0, -1);
-}
-
-function moveDown(snakeObj = snake) {
-    snakeObj.velocity(0, 1);
-}
+const moveRight = (snakeObj = snake) => snakeObj.velocity(1, 0);
+const moveLeft = (snakeObj = snake) => snakeObj.velocity(-1, 0);
+const moveUp = (snakeObj = snake) => snakeObj.velocity(0, -1);
+const moveDown = (snakeObj = snake) => snakeObj.velocity(0, 1);
 
 //AI variables
 var run_AI_Pref_Dir = false;
 var run_AI_Find_Path = false;
-var showGridlines = false;
 
 //Field
-field = document.getElementById("field");
+const field = document.getElementById("field");
 field.height = gridSize * rows;
 field.width = gridSize * cols;
 
+const overlay = document.getElementById("overlay");
+overlay.height = field.height;
+overlay.width = field.width;
+
 //Canvas
-let context = field.getContext("2d");
+const context = field.getContext("2d");
+const gridContext = overlay.getContext("2d");
 
 window.onload = function () {
     //Keyboard Listeners
     document.body.addEventListener("keyup", spacebarPause);
     document.addEventListener("keyup", changeDirection);
 
-    //Focus on canvas when window loads
-    field.focus();
+    field.focus(); //Focus on canvas when window loads
 
     //Initialize Buttons
     setButtonEvents();
@@ -75,10 +63,6 @@ window.onload = function () {
 
 function newFrame() {
     window.requestAnimationFrame(update);
-}
-
-function toggle(bool) {
-    return !bool;
 }
 
 function refreshAnimation() {
@@ -105,22 +89,6 @@ function update() {
         context.clearRect(0, 0, field.width, field.height);
         context.fillRect(0, 0, field.width, field.height);
 
-        // context.fillStyle = "white";
-        // context.clearRect(0, 0, field.width, field.height);
-        // context.fillRect(0, 0, field.width, field.height);
-        if (showGridlines) {
-            context.strokeStyle = "grey";
-            for (let i = 0; i < field.height; i++) {
-                context.moveTo(0, gridSize * i);
-                context.lineTo(field.width, gridSize * i);
-                // context.stroke();
-            }
-            for (let i = 0; i < field.width; i++) {
-                context.moveTo(gridSize * i, 0);
-                context.lineTo(gridSize * i, field.height);
-                context.stroke();
-            }
-        }
         //Draw Apple
         context.fillStyle = "red";
         context.fillRect(appleX, appleY, gridSize, gridSize)
@@ -190,7 +158,7 @@ function isSnakeCollide([testX, testY] = snake.head, blocks = snake.body) {
     if (isOutsideField([testX, testY]))
         return true;
     for (let i = 0; i < blocks.length; i++) {
-        if (testX == blocks[i][0] && testY == blocks[i][1]) {
+        if (testX === blocks[i][0] && testY === blocks[i][1]) {
             // console.log("why are you hitting yourself");
             return true;
         }
