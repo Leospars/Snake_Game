@@ -27,7 +27,7 @@ class GridGraph extends Graph {
         super();
         this.rows = _rows;
         this.cols = _cols;
-        this.grid = _grid;
+        this.gridSize = _grid;
         this.size = [this.rows, this.cols];
 
         let V = {};
@@ -89,7 +89,7 @@ class GridGraph extends Graph {
                 }
 
                 let distance = this.distBetweenNodes(search, node);
-                console.log("Node: ", node, " Distance: ", distance, " Shortest Distance: ", shortestDist);
+                // console.log("Node: ", node, " Distance: ", distance, " Shortest Distance: ", shortestDist);
                 if (distance < shortestDist) {
                     shortestDist = distance;
                     closestNode = node;
@@ -113,16 +113,24 @@ class GridGraph extends Graph {
         return aStarSearchUtil(startAt, search, blockedNodes);
     }
 
-    distBetweenNodes = (a, b) => {
+    distBetweenNodes(a, b) {
         const gridNumToPoint = (gridNumber) => {
-            let xPos = (gridNumber % this.cols) * this.grid;
-            let yPos = Math.floor(gridNumber / this.cols) * this.grid;/* console.log("Node: ", gridNumber, " X: ", xPos, " Y: ", yPos) */
+            let xPos = (gridNumber % this.cols) * this.gridSize;
+            let yPos = Math.floor(gridNumber / this.cols) * this.gridSize;/* console.log("Node: ", gridNumber, " X: ", xPos, " Y: ", yPos) */
             return new Point(xPos, yPos);
         }
 
         let pointA = gridNumToPoint(a);
         let pointB = gridNumToPoint(b);
         return pointA.dist(pointB);
+    }
+
+    coordToGridNum(coord2D = [0, 0], _cols = this.cols, gridSz = this.gridSize) {
+        let row = Math.floor(coord2D[0] / gridSz);
+        let column = Math.floor(coord2D[1] / gridSz);
+
+        let gridNum = column * _cols + row;
+        return gridNum;
     }
 }
 

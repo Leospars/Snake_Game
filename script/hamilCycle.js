@@ -3,12 +3,11 @@ const lastElement = (arr) => arr[arr.length - 1]
 let countChecked = 0;
 
 //Function that finds all possible Hamiltonian Cycles and stores them in hamilPaths
-function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], snakeGame =
-    {snakeBlock: [], appleGridNum: -1, optimize: {graph: true, findApple: true, async: true}}) {
-
-    if (!(startAt in graph.V) || !(snakeGame.appleGridNum in graph.V)) {
-        throw new Error("Node not in graph.");
-        return [];
+function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [],
+                          snakeBlock = [], appleGridNum, optimize = {graph: true, findApple: true, async: true}) {
+    if (!(startAt in graph.V) || !(appleGridNum in graph.V)) {
+        console.error("Node not in graph.");
+        return null;
     }
 
     countChecked = 0;
@@ -17,23 +16,19 @@ function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [], sn
 
     console.group("HamilUtil Run");
     console.time("hamilCycle");
-    (snakeGame.snakeBlock.length !== 0) ?
+    (snakeBlock.length !== 0) ?
         //Using Immediately Invoked Function Expression (IIFE) to run async function and await its completion
         (async () => await hamilUtilSnakeOpt({
             graph: graph, path: visited, block: blocked,
-            snakeBlock: snakeGame.snakeBlock,
-            appleGridNum: snakeGame.appleGridNum,
-            optimize: snakeGame.optimize
+            snakeBlock: snakeBlock,
+            appleGridNum: appleGridNum,
+            optimize: optimize
         }))() :
         hamilUtil(graph, visited, blocked);
     console.log("countChecked: " + countChecked);
     console.timeEnd("hamilCycle")
-
-    console.time("Cull Paths")
-    console.log("bestPath: ", bestPath = evalBestHamilPath(hamilPaths, snakeGame.appleGridNum));
-    console.timeEnd("Cull Paths")
     console.groupEnd();
-    return bestPath;
+    return hamilPaths;
 }
 
 function hamilUtil(graph, path = [0], blocked = []) {

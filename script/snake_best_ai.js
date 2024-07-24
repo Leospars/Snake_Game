@@ -12,16 +12,20 @@ let is_running_BestSnakeAI = false;
 var run_Hamil_Algo = true;
 
 let snakePath = [];
+let graphUsedForAlgo = new GridGraph(rows, cols);
 
+/**
+ * The main AI function. It calculates the best path to the apple and moves the snake along that path.
+ */
 function snakeBestAI() {
     console.group("AI logs");
     if (!is_running_BestSnakeAI) {
+        snakePath = bestPathToApple();
+        snakeVelPath = gridPathToSnakeVelPath(snakePath, graphUsedForAlgo);
+    }
+    if (!is_running_BestSnakeAI) {
         testSnake = cloneObject(snake, Snake);
         drawTestSnake();
-
-        snakePath = bestPathToApple();
-        console.log("Best Path: ", snakePath);
-        snakeVelPath = gridPathToSnakeVelPath(snakePath);
 
         //Move testSnake
         for (let vel of snakeVelPath) {
@@ -34,7 +38,8 @@ function snakeBestAI() {
         frameSnakeStartsOn = frame + 1;
         is_running_BestSnakeAI = true;
         //delay for 2 seconds
-        setTimeout(() => {}, 1000);
+        setTimeout(() => {
+        }, 1000);
     } else {
         //Run a single movement command per frame until gridPath is complete
         let iterator = frame - frameSnakeStartsOn;
@@ -53,29 +58,40 @@ function snakeBestAI() {
 
 function bestPathToApple() {
     let graph = new GridGraph(rows, cols);
-    let snakeHeadGridNum = coordToGridNum(snake.head);
-    let appleGridNum = coordToGridNum([appleX, appleY]);
-    let snakeBodyGrid = snake.body.map((pos) => coordToGridNum(pos));
-    let block = snakeBodyGrid.slice(0, -1); //Exclude tail end because head cannot hit the tail end
-    // console.log("Snake Head GridNum: ", snakeHeadGridNum, "Apple GridPos: ", appleGridNum, "Blocks: ", block);
 
+    //Convert coordinates to grid numbers
+    let snakeHeadGridNum = graph.coordToGridNum(snake.head);
+    let appleGridNum = graph.coordToGridNum([appleX, appleY]);
+    let snakeGridBody = snake.body.map((pos) => graph.coordToGridNum(pos));
+    console.log("Snake Head: ", snakeHeadGridNum, " Apple: ", appleGridNum, " Snake Body: ", snakeGridBody);
+
+    //Optimize Graph
+    let graphPrevSz = graph.size;
+    graph = optimizeGraph(graph, snakeGridBody, appleGridNum);
+    graphUsedForAlgo = graph;
+    if (!isArraySame(graphPrevSz, graph.size)) {
+        console.group("Optimize Graph");
+        console.log("Translated Graph Size: " + graph.size);
+        snakeHeadGridNum = translateGridNum(snakeHeadGridNum, graphPrevSz, graph.size, 0);
+        appleGridNum = translateGridNum(appleGridNum, graphPrevSz, graph.size);
+        snakeGridBody = snakeGridBody.map((gridNum) => translateGridNum(gridNum, graphPrevSz, graph.size));
+        console.log("Snake Head: ", snakeHeadGridNum, " Apple: ", appleGridNum, " Snake Body: ", snakeGridBody);
+        console.groupEnd();
+    }
+
+    //Choose Algorithm to use to find bestPath
     if (run_Hamil_Algo) {
-        let hamilPath = hamiltonianCycle(graph, snakeHeadGridNum, [],
-            {
-                snakeBlock: snakeBodyGrid, appleGridNum: appleGridNum, optimize: {
-                    async: true, findApple: true, graph: true
-                }
-            });
+        let hamilPath = bestHamiltonianCycle(graph, snakeHeadGridNum, [], snakeGridBody, appleGridNum);
         return hamilPath;
     } else {
-        let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, block);
+        let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, snakeGridBody);
         console.log("Shortest Path: ", shortestPath, " from " + snakeHeadGridNum + " to " + appleGridNum);
         return shortestPath;
     }
 }
 
 function shortestPathToApple(graph, headGridNum, appleGridNum, snakeGridBody = []) {
-    let gridBody = snakeGridBody.flat();
+    let gridBody = snakeGridBody.slice(0, -1); //Remove tail from body because it cannot hit it
     console.log("Block before A* Search: ", gridBody);
     let shortestPath = graph.aStarSearch(headGridNum, appleGridNum, snakeGridBody);
     console.log("Block after A* Search: ", gridBody);
@@ -90,20 +106,21 @@ function shortestPathToApple(graph, headGridNum, appleGridNum, snakeGridBody = [
     return shortestPath;
 }
 
-function bestHamiltonianCycle(graph, snakeHeadGridNumber, appleGridPos) {
-    let hamilPaths = generateHamiltonianCycles(graph, snakeHeadGridNumber);
+let pathsTried = 0;
+
+function bestHamiltonianCycle(graph, snakeHeadGridNum, blocked, snakeGridBody, appleGridNum) {
+    let hamilPaths = hamiltonianCycle(graph, snakeHeadGridNum, blocked, snakeGridBody, appleGridNum)
     hamilPaths = removeDuplicateArr(hamilPaths);
 
     console.group("Hamil Logs");
-    console.log("BadPaths found: ", badPaths);
     console.log("Paths tried: ", pathsTried);
-    console.log("Average BadPath: ", badPaths / pathsTried);
-    console.log("New Culled HamilPaths:", hamilPaths);
+    console.log("Average BadPath: ", 1 - hamilPaths.length / pathsTried);
+    console.log("New HamilPaths:", hamilPaths.length);
     badPaths = 0;
     pathsTried = 0;
     console.groupEnd();
 
-    let bestPath = evalBestHamilPath(hamilPaths, appleGridPos);
+    let bestPath = evalBestHamilPath(hamilPaths, appleGridNum);
     return bestPath
 }
 
@@ -126,94 +143,6 @@ function evalBestHamilPath(hamilPaths = [[]], appleGridNum) {
     })
     console.log("paths with apple: " + pathWapple, "Percentage: " + pathWapple / hamilPaths.length * 100);
     return bestPath;
-}
-
-function generateHamiltonianCycles(graph = new Graph(), startNode = 0, attempts = cols) {
-    let hamilPaths = [];
-    tryPaths(graph, startNode);
-    hamilPaths = hamilCycles;
-    hamilCycles = [];
-    console.log("Paths created sire: ", hamilPaths);
-    return hamilPaths;
-}
-
-let pathsTried = 0;
-
-function tryPaths(graph = new Graph(), startAt = 0) {
-    // Snake body is [2,1,0] where 2 is popped and the head is shifted in to update body
-    // but we want the gridPath to be [0,1,2,3] where 3 is the head hence the reverse
-    let snakeGridBody = testSnake.body.reverse().map((pos) => coordToGridNum(pos));
-    let vertex = graph.V[startAt];
-    let trackPath = [].concat(snakeGridBody).concat(startAt);
-
-    let limit = 0;
-    let appleGridPos = coordToGridNum([appleX, appleY]);
-    console.log("Apple GridPos: ", appleGridPos);
-    pathsTried++;
-
-    ///TODO: Implement Depth First Search Algorithm
-
-    console.group("Hamil DFS Results")
-    let lastPath = DFSearchPath(graph, trackPath, vertex);
-    console.groupEnd();
-    console.log(hamilCycles);
-
-    /* //Choose edge closer to apple
-       let closestEdge = findClosestEdge(vertexEdges, appleGridPos);
-          if(closestEdge !== -1)
-            vertex = cloneObject(graph.V[closestEdge])
-    */
-
-    hamilCycles.forEach((path) => {
-        if (!path.includes(appleGridPos)) {
-            badPaths++;
-        }
-    });
-    console.log("no apple Paths: ", badPaths);
-    console.log("Edges explored: ", edgesExplored);
-    return hamilCycles;
-}
-
-let hamilCycles = [];
-let edgesExplored = 0;
-
-function DFSearchPath(graph, initPath = [], vertex) {
-    let visited = [].concat(initPath);
-    if (hamilCycles.length === 100) {
-        return visited;
-    }
-
-    //Recursion terminator
-    if (isHamilPath(graph, visited) || visited.length >= rows * cols) {
-        if (visited.length >= rows * cols) {
-            console.error("failed finding hamil gridPath.");
-            visited.pop();
-            return visited;
-        } else {
-            console.log("Hamiltonian Path found 🥳 @:", visited);
-            // Move snake body from the front to the end of the array
-            // so that the path starts again from head.
-            let hamilCycle = visited.slice(3).concat(visited.slice(0, 3), visited[3]);
-            hamilCycles.push(hamilCycle);
-        }
-        return visited;
-    }
-
-    let vertexEdges = vertex.edges;
-    for (let i = 0; i < vertexEdges.length; i++) {
-        let nextEdge = vertexEdges[i];
-        let adjVertex = graph.V[nextEdge];
-
-        // Mark edge as visited, remove Edge
-
-        if (!visited.includes(nextEdge)) {
-            visited.push(nextEdge);
-            DFSearchPath(graph, visited, adjVertex);
-            visited.pop();
-        }
-    }
-    edgesExplored += vertexEdges.length;
-    return visited;
 }
 
 /**
@@ -244,25 +173,17 @@ function removeDuplicateArr(array2D) {
     return array2D;
 }
 
-function coordToGridNum(coord2D = [0, 0], _rows = rows, gridSz = gridSize) {
-    let row = Math.floor(coord2D[0] / gridSz);
-    let column = Math.floor(coord2D[1] / gridSz);
-
-    let gridNum = column * _rows + row;
-    return gridNum;
-}
-
-function gridPathToSnakeVelPath(gridPath) {
+function gridPathToSnakeVelPath(gridPath, graph = new GridGraph(rows, cols)) {
     let snakeVelPath = [];
     for (let i = 1; i < gridPath.length; i++) {
         let gridPosBefore = gridPath[i - 1];
         let gridPosAfter = gridPath[i];
         let dif = gridPosAfter - gridPosBefore;
 
-        vel = (dif === 1) ? [1, 0] : //Snake moved right
+        let vel = (dif === 1) ? [1, 0] : //Snake moved right
             (dif === -1) ? [-1, 0] : //Snake moved left
-                (dif === cols) ? [0, 1] : //Snake moved down
-                    (dif === -cols) ? [0, -1] : //Snake moved up
+                (dif === graph.cols) ? [0, 1] : //Snake moved down
+                    (dif === -graph.cols) ? [0, -1] : //Snake moved up
                         null;
 
         if (vel == null)
@@ -274,12 +195,27 @@ function gridPathToSnakeVelPath(gridPath) {
     return snakeVelPath;
 }
 
-function isGameOver(position, block) {
-    return isSnakeCollide(position, block);
-}
+/**
+ * Translates a node from a previous graph to a new graph. Every new column descending the node changes by the formula below
+ * @param {number} prevNode - The node in the previous graph
+ * @param {Array} graphPrevSize - The size of the previous graph as [rows, cols]
+ * @param {Array} newGraphSize - The size of the new graph as [rows, cols]
+ Here is the documentation for the `translateGridNum` function:
 
-function isObjectEmpty(obj) {
-    return Object.keys(obj).length === 0 && (obj.constructor === Object || obj.constructor === Array);
+ * @param {number} rowOffset - The row offset for the translation (default is 0)
+ * @returns {number} The translated node
+ */
+function translateGridNum(prevNode, graphPrevSize = [0, 0], newGraphSize = [0, 0], rowOffset = 0) {
+    const colOffset = graphPrevSize[1] - newGraphSize[1];
+    if (colOffset === 0) return prevNode; //Until graph optimizes row as well
+
+    const prevColSize = graphPrevSize[1];
+    const colInGraph = (Math.floor(prevNode / prevColSize) + 1) - rowOffset;
+
+    const translatedNode = (prevNode - rowOffset) - colOffset * (colInGraph - 1); //The first column's node does not change hence -1
+    console.log("Col Offset: ", colOffset, " Col in Graph: ", colInGraph, " PrevNode: ", prevNode, " Row Offset: ", rowOffset)
+    console.log("Translated Node: ", translatedNode);
+    return translatedNode;
 }
 
 function cloneObject(obj, classType = Object) {

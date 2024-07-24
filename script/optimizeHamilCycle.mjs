@@ -47,7 +47,7 @@ async function hamilUtilSnakeOpt(
 
     for (let edge of node.edges) {
         if (edge === prevLoc) continue;
-
+        pathsTried++;
         //remove last element without changing snakeBlock for virtual snake to move
         let newSnakeBlock = snakeBlock.slice(0, -1);
         if (!path.slice(1).includes(edge) && !block.includes(edge) && !newSnakeBlock.includes(edge)) {
@@ -79,11 +79,16 @@ async function hamilUtilSnakeOpt(
     }
 }
 
+/** Optimize the graph by creating a graph that encapsulates the snakes body, the apple and an extra column
+ * to allow the snake to unravel if it fills the graph overall reducing the number of nodes to search
+ * TODO: Revaluate graph optimization by starting from furthest left node instead of from [0,0] to furthest
+ *       this would use the right offset for the {@link: translateNode} function
+ */
 function optimizeGraph(graph, snakeBlock, appleGridNum) {
-    let furthest_row = 0,
-        furthest_col = 0;
+    let furthestRightRow = 0,
+        furthestRightCol = 0;
 
-    // Grid rows and cols is numbered based on non-starting zero while nodes are; so we add 1
+    // Grid rows and cols are numbered starting at 1 while nodes start at 0; so we add 1
     let apple_row = Math.floor(appleGridNum / graph.cols) + 1,
         apple_col = (appleGridNum % graph.cols) + 1;
 
@@ -91,14 +96,14 @@ function optimizeGraph(graph, snakeBlock, appleGridNum) {
         (node) => {
             let row = Math.floor(node / graph.cols) + 1;
             let col = (node % graph.cols) + 1;
-            furthest_row = Math.max(furthest_row, row);
-            furthest_col = Math.max(furthest_col, col);
+            furthestRightRow = Math.max(furthestRightRow, row);
+            furthestRightCol = Math.max(furthestRightCol, col);
         }
     )
 
-    if (furthest_row < graph.rows)
-        (furthest_row < apple_row) ? furthest_row = apple_row : furthest_row += 1;
-    if (furthest_col < graph.rows)
-        (furthest_col < apple_col) ? furthest_col = apple_col : furthest_col += 1;
-    return new GridGraph(furthest_row, furthest_col);
+    if (furthestRightRow < graph.rows)
+        (furthestRightRow < apple_row) ? furthestRightRow = apple_row : furthestRightRow += 1;
+    if (furthestRightCol < graph.rows)
+        (furthestRightCol < apple_col) ? furthestRightCol = apple_col : furthestRightCol += 1;
+    return new GridGraph(furthestRightRow, furthestRightCol);
 }
