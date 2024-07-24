@@ -1,14 +1,14 @@
 //Customize user interface elements with js
 
-class Button{
+class Button {
     idName;
     id = null;
 
     //Add button to UI if it doesn't exist
-    constructor(id){
+    constructor(id) {
         this.id = document.getElementById(id);
         this.idName = id;
-        if(this.id === null){
+        if (this.id === null) {
             let newButton = document.createElement("button");
             let ui_Buttons = document.getElementById("ui_buttons");
             ui_Buttons.appendChild(newButton);
@@ -18,12 +18,33 @@ class Button{
         }
     }
 
-    click(func){
+    click(func) {
         this.id.addEventListener("click", func);
     }
 }
 
-let setButtonEvents = function() {
+let showing_gridlines = false;
+
+function showGrid(show) {
+    if (!show) {
+        gridContext.clearRect(0, 0, field.width, field.height);
+        return;
+    }
+
+    gridContext.strokeStyle = "grey";
+    for (let i = 0; i < field.height; i++) {
+        gridContext.moveTo(0, gridSize * i);
+        gridContext.lineTo(field.width, gridSize * i);
+        // gridContext.stroke();
+    }
+    for (let i = 0; i < field.width; i++) {
+        gridContext.moveTo(gridSize * i, 0);
+        gridContext.lineTo(gridSize * i, field.height);
+        gridContext.stroke();
+    }
+}
+
+let setButtonEvents = function () {
     //Button Listeners
     let restartButton = new Button("restart");
     restartButton.click(restart);
@@ -32,16 +53,16 @@ let setButtonEvents = function() {
     pauseButton.click(pause_play);
 
     //AI buttons
-    new Button("ai_hc").click(function () {
+    new Button("ai_pref_dir").click(function () {
+        if (run_AI_Find_Path) run_AI_Find_Path = !run_AI_Find_Path;
+        run_AI_Pref_Dir = !run_AI_Pref_Dir;
+        console.log("AI_Pref_Dir: ", run_AI_Pref_Dir);
+    });
+
+    new Button("run_ai").click(function () {
         if (run_AI_Pref_Dir) run_AI_Pref_Dir = !run_AI_Pref_Dir;
         run_AI_Find_Path = !run_AI_Find_Path;
         console.log("AI_Find_Path: ", run_AI_Find_Path, " Algo: ", (run_Hamil_Algo) ? "Hamil Cycle" : "A*");
-    });
-
-    new Button("ai_pref_dir").click(function () {
-        if (run_AI_Find_Path) run_AI_Find_Path = !run_AI_Find_Path;
-        run_AI_Pref_Dir = toggle(run_AI_Pref_Dir);
-        console.log("AI_Pref_Dir: ", run_AI_Pref_Dir);
     });
 
     new Button("toggleAI").click(() => {
@@ -50,7 +71,10 @@ let setButtonEvents = function() {
     });
 
     let gridlineButton = new Button("gridlines");
-    gridlineButton.click(() => (showGridlines = !showGridlines));
+    gridlineButton.click(() => {
+        (!showing_gridlines) ? showGrid(true) : showGrid(false);
+        showing_gridlines = !showing_gridlines
+    });
 
     let speedButton = new Button("boost");
     speedButton.id.addEventListener("mousedown", speedUp);
@@ -60,12 +84,12 @@ let setButtonEvents = function() {
     speed1x.id.innerHTML = "1x";
 
     //Make Button 1x return snake to initial speed
-    speed1x.click( () => {
+    speed1x.click(() => {
         changeFrameRate(() => frameRate = initialFrameRate);
     });
 
     //Create Button 10x
-    let speed10x = new Button ("speed10x");
+    let speed10x = new Button("speed10x");
     speed10x.innerHTML = "10x";
 
     //Make Button 10x speed up snake 10x and cap at 5ms
@@ -75,13 +99,13 @@ let setButtonEvents = function() {
 
     //Create Super speed Button
     let superSpeedButton = new Button("superSpeed");
-    superSpeedButton.click(function(){
+    superSpeedButton.click(function () {
         isSuperSpeedOn = !isSuperSpeedOn;
         console.log("Super Speed: ", isSuperSpeedOn);
     });
 }
 
-function changeFrameRate(changeFunc){
+function changeFrameRate(changeFunc) {
     isSuperSpeedOn = false;
     changeFunc();
     refreshAnimation();
@@ -89,32 +113,33 @@ function changeFrameRate(changeFunc){
 }
 
 let isSuperSpeedOn = false;
-function speedUp(){
+
+function speedUp() {
     isSuperSpeedOn = false;
-    let intervalID = setInterval(function() {
-        frameRate = Math.max(frameRate*.65, 0.01);
+    let intervalID = setInterval(function () {
+        frameRate = Math.max(frameRate * .65, 0.01);
         console.log("frRate: ", frameRate, "ms");
         refreshAnimation();
     }, 100);
 
-    speedButton.id.addEventListener("mouseup", function(){
+    speedButton.id.addEventListener("mouseup", function () {
         clearInterval(intervalID);
     });
 }
 
 let storedVelocity;
-function pause_play(){
-    if(paused){
+
+function pause_play() {
+    if (paused) {
         console.log("Game continued.");
         snake.velocity(storedVelocity[0], storedVelocity[1])
-        document.getElementById("pause_play").innerHTML="⏸️";
+        document.getElementById("pause_play").innerHTML = "⏸️";
         paused = false;
-    }
-    else {
+    } else {
         storedVelocity = [snake.xVel, snake.yVel];
-        snake.velocity(0,0);
+        snake.velocity(0, 0);
         console.log("Paused");
-        document.getElementById("pause_play").innerHTML="▶️";
+        document.getElementById("pause_play").innerHTML = "▶️";
         paused = true;
     }
 
@@ -122,17 +147,17 @@ function pause_play(){
     // field.setAttribute()
 }
 
-function restart(){
-    document.getElementById("GameOver").innerHTML= "";
-    document.getElementById("score").innerHTML= "0";
+function restart() {
+    document.getElementById("GameOver").innerHTML = "";
+    document.getElementById("score").innerHTML = "0";
     field.classList.remove("hidden");
-    snake.velocity(0,0);
+    snake.velocity(0, 0);
 
     //Reset Global Variables
     gameOver = false;
     paused = false;
     score = 0;
-    frame= 0;
+    frame = 0;
     frameRate = initialFrameRate; //fps
     snakeTrack = [];
     restart_AI_variables();

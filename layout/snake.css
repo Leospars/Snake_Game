@@ -61,7 +61,6 @@ body{
 
     /* url(https://img.freepik.com/premium-vector/cute-pastel-green-checkerboard-checkered-gingham-plaid-tartan-pattern-background-wallpaper_565280-454.jpg?w=750)!important; */
     border-radius: 1rem;
-    border: 0.25rem solid black;
     color: white;
     /*width: 40rem;*/
 }
@@ -137,4 +136,25 @@ button:active {
     font-size: 1.2rem;
     font-style: italic;
     color: beige;
+}
+
+#canvas-container {
+    display: block;
+    width: 50vh;
+    height: 50vh;
+    position: relative;
+    /*left: calc(50%;*/
+    margin: 0 auto;
+}
+
+#field, #overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#overlay {
+    z-index: 100;
+    border: white 2px solid;
+    background-color: transparent;
 }
