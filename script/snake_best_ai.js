@@ -23,36 +23,7 @@ function snakeBestAI() {
         snakePath = bestPathToApple();
         snakeVelPath = gridPathToSnakeVelPath(snakePath, graphUsedForAlgo);
     }
-    if (!is_running_BestSnakeAI) {
-        testSnake = cloneObject(snake, Snake);
-        drawTestSnake();
-
-        //Move testSnake
-        for (let vel of snakeVelPath) {
-            testSnake.velocity(vel[0], vel[1]);
-            testSnake.update();
-            drawTestSnake();
-        }
-        testSnake.velocity(0, 0);
-
-        frameSnakeStartsOn = frame + 1;
-        is_running_BestSnakeAI = true;
-        //delay for 2 seconds
-        setTimeout(() => {
-        }, 1000);
-    } else {
-        //Run a single movement command per frame until gridPath is complete
-        let iterator = frame - frameSnakeStartsOn;
-        if (iterator <= snakeVelPath.length - 1) {
-            // Move real Snake
-            snake.velocity(snakeVelPath[iterator][0], snakeVelPath[iterator][1]);
-        } else if (iterator === snakeVelPath.length) {
-            snake.velocity(0, 0);
-            is_running_BestSnakeAI = false;
-        }
-    }
-
-    drawTestSnake(); //To keep test snake on the screen after press play
+    moveDemoSnake();
     console.groupEnd();
 }
 
@@ -218,6 +189,38 @@ function translateGridNum(prevNode, graphPrevSize = [0, 0], newGraphSize = [0, 0
     return translatedNode;
 }
 
+function moveDemoSnake() {
+    if (!is_running_BestSnakeAI) {
+        testSnake = cloneObject(snake, Snake);
+        drawTestSnake();
+
+        //Move testSnake
+        for (let vel of snakeVelPath) {
+            testSnake.velocity(vel[0], vel[1]);
+            testSnake.update();
+            drawTestSnake();
+        }
+        testSnake.velocity(0, 0);
+
+        frameSnakeStartsOn = frame + 1;
+        is_running_BestSnakeAI = true;
+        //delay for 2 seconds
+        setTimeout(() => {
+        }, 1000);
+    } else {
+        //Run a single movement command per frame until gridPath is complete
+        let iterator = frame - frameSnakeStartsOn;
+        if (iterator <= snakeVelPath.length - 1) {
+            // Move real Snake
+            snake.velocity(snakeVelPath[iterator][0], snakeVelPath[iterator][1]);
+        } else if (iterator === snakeVelPath.length) {
+            snake.velocity(0, 0);
+            is_running_BestSnakeAI = false;
+        }
+    }
+
+    drawTestSnake(); //To keep test snake on the screen after press play
+}
 function cloneObject(obj, classType = Object) {
     if (obj == null || typeof (obj) != 'object') {
         return obj;

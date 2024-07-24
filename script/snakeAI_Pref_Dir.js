@@ -8,8 +8,6 @@
  * All functions are dependent on the global variables apple_xDist and apple_yDist
  */
 
-
-
 function snakeAI_Pref_Dir(apple_xDist, apple_yDist) {
     const findAppleDir = (xDist = apple_xDist, yDist = apple_yDist) => {
         let appleIsUp = (yDist > 0);
