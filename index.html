@@ -2,92 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="3; url=https://leospars.github.io/Snake_Game/snake.html">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <!--    <meta content="3; url=https://leospars.github.io/Snake_Game/snake.html" http-equiv="refresh">-->
     <title>Redirect to Snake Game</title>
-    <link rel="stylesheet" href="./layout/snake.css">
+    <link href="./layout/snake.css" rel="stylesheet">
 </head>
 <body>
-    <h1><u> Snake Game</u></h1>
-    <h2> Tasks: </h2>
-        <ul> 
-            <li> Add sign in capabilities / Accounts </li>
-            <li> Store HighScore </li>
-            <li> Create Leader Board </li>
-            <li> Add buttons to make snake use ai algorithm rather than user control </li>
-            <li> Implement A* Search Algorithm </li>
+<h1 id="snake-game">Snake Game</h1>
+<h3>Redirecting to the main page in <span>10</span> seconds...</h3>
+<h2 id="tasks">Tasks:</h2>
+<ul>
+    <li>Add sign in capabilities / Accounts</li>
+    <li>Store HighScore</li>
+    <li>Create Leader Board</li>
+    <li>Add buttons to make snake use ai algorithm rather than user control</li>
+    <li>Implement A* Search Algorithm</li>
+</ul>
+<h2 id="current-features">Current Features:</h2>
+<ul>
+    <li><p>Fully operable Snake Game using user input</p></li>
+    <li><p>Can toggle Hamiltonian Cycle and A* Search to play on it&#39;s own</p>
+    </li>
+    <li><p>Fully operable Snake Game using user input</p>
+    </li>
+    <li><p>Can preferentially choose a direction to move toward apple, and it will not hit itself</p>
+    </li>
+    <li><p>or the wall; if no other option is available will pause game</p>
+    </li>
+    <li><p>Buttons added to adjust speed of the game</p>
+    </li>
+    <li><p>Buttons added to make snake use AI algorithm rather than user control</p>
+    </li>
+</ul>
+<h2 id="background">Background:</h2>
+<p>Hamiltonian Cycle is a gridPath in graph theory that visits each vertex exactly once.<br>
+    Implementing this in the snake game, the snake visits every square on the board exactly once. <br>
+    This prevents the snake from ever hitting itself or the wall and will always grow the apple, no <br>
+    matter what random location it is generated in except when the field/canvas does not have an even <br>
+    number of columns and rows.</p>
+<p>This may be easily resolved by adding one HC cycle for even columns or rows and odd columns and rows.<br>
+    However, this is very boring, so we will try to implement a code that will allow the snake to generate<br>
+    a new HC cycle every time it eats an apple and one that avoids the possibility of hitting itself in the<br>
+    cycle where the map does not have even sides.</p>
+<h2 id="bugs">Bugs:</h2>
+<ul>
+    <li>
+        <ul> Snake can go through itself if you press the opposite direction fast enough
+            <ul> Solution: Add buffer to allow the next input to pass after the body new location update is complete.
+            </ul>
         </ul>
-    <h2> Current Features: </h2>    
-        <ul> 
-            <li> Fully operable Snake Game using user input</li>
-            <li> Can use Hamiltonian Cycle </li>
-            <li> Can use algorithm to eat apple </li>
-        </ul>
-        <br />
-    <h1>Redirecting to the main page in 0 seconds...</h1>
-    </body>
-    <script>
-        // setTimeout(function(){
-        //     window.location.href = 'https://leospars.github.io/Security/securityApp.html';
-        //     console.log("Page redirected to securityApp.html");
-        // }, 3000);
-    </script>
-</html>
+    </li>
+</ul>
+</body>
+<script>
+    let countDown = 0
+    const span = document.querySelector('span');
+    window.onload = () => {
+        countDown = span.textContent;
+        setTimeout(function () {
+            window.location.href = 'https://leospars.github.io/Snake_Game/snake.html';
+        }, countDown * 1000);
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="10; url=https://leospars.github.io/Snake_Game/snake.html">
-    <title>Redirect to Snake Game</title>
-    <link rel="stylesheet" href="./layout/snake.css">
-</head>
-<body>
-    <h1><u> Snake Game</u></h1>
-    <h2> Tasks: </h2>
-        <ul> 
-            <li> Add sign in capabilities / Accounts </li>
-            <li> Store HighScore </li>
-            <li> Create Leader Board </li>
-            <li> Implement A* Search Algorithm </li>
-            <li> Fix gridlines </li>
-        </ul>
-    <h2> Current Features: </h2>    
-        <ul> 
-            <li> Fully operable Snake Game using user input</li>
-            <li> Can use Hamiltonian Cycle </li>
-            <ul>
-                Hamiltonian Cycle is a gridPath in graph theory that visits each vertex exactly once. <br />
-                Implementing this in the snake game, the snake visits every square on the board exactly once. <br />
-                This prevents the snake from ever hitting itself or the wall and will always eat the apple, no <br />
-                matter what random location it is generated in except when the field/canvas does not have an even <br />
-                number of columns and rows. <br /><br />
-                This may easily e resolved by adding an if statement to stat the HC cycle in an even location.<br />
-                However, this is very boring so we will try to implement a code that will allow the snake to generate <br />
-                a new HC cycle every time it eats an apple and one that avoids the possibility of hitting itself in the <br />
-                cycle where the map does not have even sides. <br />
-            </ul>
-            <li> Can use algorithm to eat apple </li>
-            <ul>
-                <li> It preferentially choses to go right over left and up over down</li>
-                <li> and it will not hit itself or the wall unless no other option is available</li>
-            </ul>
-            <li> Can speed up game </li>
-            <li> Buttons added to make snake use AI algorithm rather than user control</li>
-        </ul>
-    <h2> Bugs: </h2>
-        <ul>
-            <li> Snake can go through itself if you press the opposite direction fast enough</li>
-            * Solution: Add buffer to allow the next input to pass after the body new location update is complete.
-        </ul>
-        <br />
-    <h1>Redirecting to the main page in 0 seconds...</h1>
-    </body>
-    <script>
-        // setTimeout(function(){
-        //     window.location.href = 'https://leospars.github.io/Security/securityApp.html';
-        //     console.log("Page redirected to securityApp.html");
-        // }, 3000);
-    </script>
+        setInterval(() => {
+            const count = parseInt(span.textContent);
+            span.textContent = String(count - 1);
+        }, 1000);
+    }
+</script>
 </html>
