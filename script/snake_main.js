@@ -1,5 +1,4 @@
-//Remember \Snake_GM\snakeAI_Pref_Dir.js
-/* - - - - - - - - - 
+/* - - - - - - - - -
   SNAKE GAME MAIN
  - - - - - - - - - */
 /* Basic Snake Game with auto win */
@@ -18,7 +17,7 @@ let gameOver = false,
     score = 0,
     highScore = 0;
 let gameUpdate;
-let frameRate = 1000 / 10; //100fps
+let frameRate = 1000 / 9; //9fps
 let initialFrameRate = frameRate;
 let frame = 0;
 
@@ -72,7 +71,9 @@ function refreshAnimation() {
 
 function update() {
     if (gameOver) {
+        drawSnake()
         snake.velocity(0, 0);
+        clearInterval(gameUpdate);
         return;
     }
 
@@ -108,10 +109,7 @@ function update() {
             snakeAI_Pref_Dir(xDistToApple, yDistToApple);
         }
         if (run_AI_Find_Path === true) {
-            // console.time("hamilCycleFunc");
             snakeBestAI();
-            // pause_play();
-            // console.timeEnd("hamilCycleFunc");
         }
 
         //Update Canvas
@@ -127,19 +125,19 @@ function update() {
             // frameRate = Math.max(frameRate*0.95, 50);
             console.log("frameRate: ", frameRate, "ms\nscore: ", score);
 
-            snake.body.push([-1, -1]);
-            placeApple();
-            context.fillStyle = "red";
-            context.fillRect(appleX, appleY, gridSize, gridSize)
-        }
-    }
+            snake.grow();
 
-    if (snake.body.length === rows * cols + 1) {
-        document.getElementById("GameOver").innerHTML = "YOU WON 🥳\n Best High Score";
-        field.classList.add('hidden');
-        gameOver = true;
-        console.log("YOU WON :)");
-        return;
+            //Win Game
+            if (snake.body.length === rows * cols - 1) {
+                document.getElementById("GameOver").innerHTML = "YOU WON 🥳\n Best High Score";
+                field.classList.add('hidden');
+                gameOver = true;
+                console.log("YOU WON :)");
+                return;
+            }
+
+            placeApple();
+        }
     }
 
     if (isSnakeCollide(snake.head)) {
@@ -172,21 +170,22 @@ function isOutsideField([testX, testY], xBoundary = [0, field.width], yBoundary 
 
 function drawSnake(snakeObj = snake, headColor = "rgb(20,160,30)", bodyColor = "lime", grid = gridSize) {
     //Draw Snake Body new location
+    let pad = 1;
     context.fillStyle = bodyColor;
     for (let i = 0; i <= snakeObj.body.length - 1; i++) {
-        context.fillRect(snakeObj.body[i][0], snakeObj.body[i][1], grid, grid);
+        context.fillRect(snakeObj.body[i][0] + pad, snakeObj.body[i][1] + pad, grid - pad - 1, grid - pad - 1);
     }
 
     //Draw Head new location
     context.strokeStyle = "yellow";
     context.fillStyle = headColor;
-    context.fillRect(snakeObj.xPos, snakeObj.yPos, grid, grid);
-    context.strokeRect(snakeObj.xPos, snakeObj.yPos, grid, grid);
+    context.fillRect(snakeObj.xPos + pad, snakeObj.yPos + pad, grid - pad - 1, grid - pad - 1);
+    // context.strokeRect(snakeObj.xPos + pad, snakeObj.yPos + pad, grid-pad-1, grid-pad-1);
 
 }
 
 function spacebarPause(event) {
-    if (event.key == ' ' || event.code == 'Space' || event.keyCode == 32) {
+    if (event.key === ' ' || event.code === 'Space' || event.keyCode === 32) {
         console.log("Spacebar was clicked.")
         pause_play();
     }
@@ -200,13 +199,13 @@ function changeDirection(event) {
         document.getElementById("pause_play").innerHTML = "⏸️";
         paused = false;
 
-        if (event.code == "ArrowUp" && snake.yVel != 1) {
+        if (event.code === "ArrowUp" && snake.yVel !== 1) {
             moveUp();
-        } else if (event.code == "ArrowDown" && snake.yVel != -1) {
+        } else if (event.code === "ArrowDown" && snake.yVel !== -1) {
             moveDown();
-        } else if (event.code == "ArrowLeft" && snake.xVel != 1) {
+        } else if (event.code === "ArrowLeft" && snake.xVel !== 1) {
             moveLeft();
-        } else if (event.code == "ArrowRight" && snake.xVel != -1) {
+        } else if (event.code === "ArrowRight" && snake.xVel !== -1) {
             moveRight();
         }
         snake.update();
@@ -218,17 +217,26 @@ function rand(smallest, largest) {
     return Math.floor(Math.random() * (largest + 1 - smallest) + smallest);
 }
 
+let randX, randY;
 function placeApple() {
     randX = rand(0, cols - 1) * gridSize;
     randY = rand(0, rows - 1) * gridSize;
 
-    for (let i = 0; i < snake.body.length - 1; i++) {
-        if (randX == snake.body[i][0] && randY == snake.body[i][1]) {
-            placeApple();
+    let appleIntersectBody = false;
+    snake.body.forEach((block) => {
+        if (isArraySame(block, [randX, randY])) {
+            appleIntersectBody = true;
         }
+    });
+
+    if (appleIntersectBody || isSamePoint([snake.xPos, snake.yPos], [randX, randY])) {
+            placeApple();
     }
+
     appleX = randX;
     appleY = randY;
+    context.fillStyle = "red";
+    context.fillRect(appleX, appleY, gridSize, gridSize)
 }
 
 const appleWasAte = () => {
@@ -253,7 +261,7 @@ const isArraySame = (arr1, arr2) => {
 }
 
 const isSamePoint = (p1, p2) => {
-    return (p1[0] == p2[0] && p1[1] == p2[1]);
+    return (p1[0] === p2[0] && p1[1] === p2[1]);
 }
 
 function outlineSnake() {

@@ -8,6 +8,9 @@ class Snake {
     yVel = 0;
     head = [0, 0];
     body = [];
+    #eatApple = false;
+
+    gridGraph = new GridGraph(rows, cols);
 
     //constructor for getting gridsize, rows and columns of field
     initializePosition(pos = [-1, -1]) {
@@ -19,7 +22,7 @@ class Snake {
             this.yPos = pos[1];
         }
         this.head = [this.xPos, this.yPos];
-        this.body = [[this.xPos - gridSize, this.yPos], [this.xPos - gridSize * 2, this.yPos], [this.xPos - gridSize * 3, this.yPos]];
+        this.body = [[this.xPos - gridSize, this.yPos], [this.xPos - gridSize * 2, this.yPos]];
     }
 
     velocity(horizontal = 0, vertical = 0) {
@@ -36,16 +39,21 @@ class Snake {
     }
 
     update() {
-        let snakeIsMoving = !(this.xVel == 0 && this.yVel == 0);
+        let snakeIsMoving = !(this.xVel === 0 && this.yVel === 0);
         if (snakeIsMoving) {
             //Update Snake Body
             this.body.unshift([this.xPos, this.yPos]);
-            this.body.pop();
+            if (!this.#eatApple) this.body.pop();
+            else this.#eatApple = false;
 
             //Update Snake Head
             [this.xPos, this.yPos] = [this.xPos + this.xVel * gridSize, this.yPos + this.yVel * gridSize];
             this.head = [this.xPos, this.yPos];
         }
+    }
+
+    grow() {
+        snake.#eatApple = true;
     }
 }
 
