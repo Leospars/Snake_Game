@@ -21,6 +21,7 @@ class Graph {
 class GridGraph extends Graph {
     rows = 0;
     cols = 0;
+    gridSize = 0;
     size = [];
 
     constructor(_rows = rows, _cols = cols, _grid = gridSize) {

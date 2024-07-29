@@ -4,7 +4,7 @@ let countChecked = 0;
 
 //Function that finds all possible Hamiltonian Cycles and stores them in hamilPaths
 function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [],
-                          snakeBlock = [], appleGridNum, optimize = {graph: true, findApple: true, async: true}) {
+                          snakeBlock = [], appleGridNum, optimize = {graph: false, findApple: false, async: true}) {
     if (!(startAt in graph.V) || !(appleGridNum in graph.V)) {
         console.error("Node not in graph.");
         return null;
@@ -14,8 +14,6 @@ function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [],
     hamilPaths = [];
     let visited = [startAt];
 
-    console.group("HamilUtil Run");
-    console.time("hamilCycle");
     (snakeBlock.length !== 0) ?
         //Using Immediately Invoked Function Expression (IIFE) to run async function and await its completion
         (async () => await hamilUtilSnakeOpt({
@@ -26,22 +24,22 @@ function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [],
         }))() :
         hamilUtil(graph, visited, blocked);
     console.log("countChecked: " + countChecked);
-    console.timeEnd("hamilCycle")
-    console.groupEnd();
     return hamilPaths;
 }
 
-function hamilUtil(graph, path = [0], blocked = []) {
-    if (isHamilCycle(path)) {
+async function hamilUtil(graph, path = [0], blocked = []) {
+    if (isHamilCycle(graph, path)) {
         hamilPaths.push(path);
-        // console.log("Found Hamil Yayy: ", path)
+        return path;
+    }
+
+    if (hamilPaths.length >= 1) return;
+
+    if (path.length > graph.rows * graph.cols + 1) {
+        console.log("path exceeded grids")
         return;
     }
 
-    if (path.length > graph.rows * graph.cols + 1)
-        return;
-
-    const startLoc = path[0];
     const prevLoc = (path.length >= 2) ? path[path.length - 2] : null;
     const node = graph.V[lastElement(path)];
 
@@ -56,21 +54,27 @@ function hamilUtil(graph, path = [0], blocked = []) {
     }
 }
 
-function isHamilCycle(path = []) {
+function isHamilPath(path = []) {
     if (path.length < 4)
         return false;
 
-    let noDuplicates = containsDuplicates(path.slice(1))
+    let noDuplicates = !containsDuplicates(path.slice(1))
     let endWithStart = path[0] === path[path.length - 1];
     // console.log(noDuplicates + " " + endWithStart + " : " + path[0] + " == "+ path[path.length - 1])
     return (noDuplicates && endWithStart);
+}
+
+function isHamilCycle(graph = new GridGraph(), path = []) {
+    if (path.length < 4)
+        return false;
+    return (path[0] === path[path.length - 1]) && graph.rows * graph.cols + 1 === path.length && !containsDuplicates(path.slice(1));
 }
 
 function containsDuplicates(path) {
     //Check if array contains any duplicates
     for (let i = 0; i <= path.length - 2; i++) {
         if (path.slice(i + 1).includes(path[i]))
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }

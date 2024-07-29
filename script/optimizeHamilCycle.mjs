@@ -24,7 +24,7 @@ async function hamilUtilSnakeOpt(
     //Ensures the function in for loops end if the resulting path will be longer than the shortest path with the apple
     if (optimize.findApple && bestPath.length !== 0 && path.length > bestPath.length) return;
 
-    if (isHamilCycle(path)) {
+    if (isHamilCycle(graph, path)) {
         hamilPaths.push(path);
         if (optimize.findApple && path.includes(appleGridNum)) {
             pathWapple++;
@@ -42,6 +42,11 @@ async function hamilUtilSnakeOpt(
         return;
     }
 
+    if (hamilPaths.length >= 1) {
+        console.log("End search - HamilPaths: ", hamilPaths);
+        return;
+    }
+
     const prevLoc = (path.length >= 2) ? path[path.length - 2] : null;
     const node = graph.V[lastElement(path)];
 
@@ -51,7 +56,7 @@ async function hamilUtilSnakeOpt(
         //remove last element without changing snakeBlock for virtual snake to move
         let newSnakeBlock = snakeBlock.slice(0, -1);
         if (!path.slice(1).includes(edge) && !block.includes(edge) && !newSnakeBlock.includes(edge)) {
-            // console.log("node: " + node.location +  " -> edge: " + edge + "-> path: " + path)
+            // console.log("node: " + node.location +  " -> edge: " + edge + "-> path: ", path)
             let newPath = [...path, edge];
 
             //MOVE SNAKE
@@ -73,8 +78,7 @@ async function hamilUtilSnakeOpt(
                     snakeBlock: newSnakeBlock,
                     appleGridNum: appleGridNum,
                     optimize: optimize
-                })
-            ;
+                });
         }
     }
 }
