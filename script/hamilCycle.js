@@ -7,7 +7,7 @@ function hamiltonianCycle(graph = new GridGraph(), startAt = 0, blocked = [],
                           snakeBlock = [], appleGridNum, optimize = {graph: false, findApple: false, async: true}) {
     if (!(startAt in graph.V) || !(appleGridNum in graph.V)) {
         console.error("Node not in graph.");
-        return null;
+        return [];
     }
 
     countChecked = 0;

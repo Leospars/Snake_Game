@@ -43,7 +43,7 @@ async function hamilUtilSnakeOpt(
     }
 
     if (hamilPaths.length >= 1) {
-        console.log("End search - HamilPaths: ", hamilPaths);
+        console.log("End search - HamilPaths: ");
         return;
     }
 
@@ -106,8 +106,10 @@ function optimizeGraph(graph, snakeBlock, appleGridNum) {
     )
 
     if (furthestRightRow < graph.rows)
-        (furthestRightRow < apple_row) ? furthestRightRow = apple_row : furthestRightRow += 1;
-    if (furthestRightCol < graph.rows)
-        (furthestRightCol < apple_col) ? furthestRightCol = apple_col : furthestRightCol += 1;
+        (furthestRightRow < apple_row) ? furthestRightRow = apple_row :
+            (furthestRightRow % 2 !== 0 && furthestRightCol % 2 !== 0) ? furthestRightRow += 1 :
+                furthestRightRow = furthestRightRow;
+    if (furthestRightCol < graph.rows && furthestRightCol < apple_col)
+        furthestRightCol = apple_col;
     return new GridGraph(furthestRightRow, furthestRightCol);
 }

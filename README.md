@@ -39,5 +39,14 @@ cycle where the map does not have even sides.
 Bugs:
 -----
 
-* Snake can go through itself if you press the opposite direction fast enough
-  \* Solution: Add buffer to allow the next input to pass after the body new location update is complete.
+* Hamiltonian Cycle is mathematically impossible if the field/canvas does not have an even number of columns or rows.
+  * Solution: Add if statement to start the HC cycle to cover an even portion of the graph/field.
+* Snake can go through itself if you press the opposite direction fast enough. <br>
+  * Solution: Add buffer to allow the next input to pass after the body new location update is complete.
+* Hamiltonian Cycle takes an unideal amount of time to calculate the best path if the graph is greater than 6 by 6 (
+  6x6).
+  * Solution: Optimize the algorithm further, use an algorithm to get the snake head in a 6x6 with the apple and the
+    analysing the outermost rows and columns to ensure the snake will not crash after exiting the 6x6 with the apple.
+* Snake may hit it's tail during Hamiltonian Cycle if it eats an apple and the body grows.
+  The path is already mapped, so it might though very unlikely.
+  * Solution snake grow after eat apple in the optimizeHamilCycle path calculation

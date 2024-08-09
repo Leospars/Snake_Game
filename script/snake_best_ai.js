@@ -6,7 +6,7 @@ let is_running_BestSnakeAI = false;
 var run_Hamil_Algo = true;
 
 let snakePath = [];
-let graphUsedForAlgo = new GridGraph(rows, cols);
+let graphSizeForAlgo = [rows, cols];
 
 /**
  * The main AI function. It calculates the best path to the apple and moves the snake along that path.
@@ -17,7 +17,7 @@ function snakeBestAI() {
         console.log( log.d("Calculating Best Path. . ."));
         console.group("AI logs");
         snakePath = bestPathToApple();
-        if(snakePath === undefined){
+        if (snakePath.length === 0) {
             console.log("Could not find path to apple. Giving Up.");
             pause_play();
             is_running_BestSnakeAI = false;
@@ -29,54 +29,63 @@ function snakeBestAI() {
     }
     // let thisID = setTimeout(() => console.log(log.clear(), "Clear Log"),2000);
     // clearTimeout(thisID);
+    log.clear();
+    log.d("Running Snake along Path: ");
+    log.d('[' + snakePath + ']');
     moveSnakeAlongVelPath();
 }
 
 let foundHamilPath = false;
-let run_Hamil_Algo_force = null;
+let run_Hamil_Algo_force = true;
 
 function bestPathToApple() {
     let graph = new GridGraph(rows, cols);
-
+    let bestPath = [];
     //Convert coordinates to grid numbers
     let snakeHeadGridNum = graph.coordToGridNum(snake.head);
     let appleGridNum = graph.coordToGridNum([appleX, appleY]);
     let snakeGridBody = snake.body.map((pos) => graph.coordToGridNum(pos));
 
     //Optimize Graph
-    /*
     let graphPrevSz = graph.size;
-    graph = optimizeGraph(graph, snakeGridBody, appleGridNum);
-    graphUsedForAlgo = graph;
-    if (!isArraySame(graphPrevSz, graph.size)) {
-        console.group("Optimize Graph");
-        console.log("Translated Graph Size: " + graph.size);
-        snakeHeadGridNum = translateGridNum(snakeHeadGridNum, graphPrevSz, graph.size, 0);
-        appleGridNum = translateGridNum(appleGridNum, graphPrevSz, graph.size);
-        snakeGridBody = snakeGridBody.map((gridNum) => translateGridNum(gridNum, graphPrevSz, graph.size));
-        console.log("Snake Head: ", snakeHeadGridNum, " Apple: ", appleGridNum, " Snake Body: ", snakeGridBody);
-        console.groupEnd();
-    }*/
+    // graph = optimizeGraph(graph, snakeGridBody, appleGridNum);
+    // graphSizeForAlgo = graph.size;
+    const graphChanged = (graph.size[0] !== rows || graph.size[1] !== cols);
+    console.log("Graph Changed: ", graphChanged, " Graph Size: ", graph.size);
+    // if (graphChanged){
+    //     console.log("Previous Graph Size: " + graphPrevSz + " => " + graph.size);
+    //     snakeHeadGridNum = translateGridNum(snakeHeadGridNum, graphPrevSz, graphSizeForAlgo, 0);
+    //     appleGridNum = translateGridNum(appleGridNum, graphPrevSz, graphSizeForAlgo);
+    //     snakeGridBody = snakeGridBody.map((gridNum) => translateGridNum(gridNum, graphPrevSz, graphSizeForAlgo));
+    //     console.log("Snake Head: ", snakeHeadGridNum, " Apple: ", appleGridNum, " Snake Body: ", snakeGridBody);
+    // }*/
 
     //Choose Algorithm to use to find bestPath
-    if(run_Hamil_Algo_force === null) {
+    if (run_Hamil_Algo_force === true) {
         if (snake.body.length > 0.30 * rows * cols)
             run_Hamil_Algo = true;
         else run_Hamil_Algo = false;
-    } else run_Hamil_Algo = run_Hamil_Algo_force;
+    }
 
     if (run_Hamil_Algo) {
-        if(foundHamilPath) return snakePath;
+        console.log("foundHamilPath: ", foundHamilPath, " graphChanged: ", graphChanged);
+        if (foundHamilPath && !graphChanged) return snakePath;
         console.time("hamilCycle")
         let hamilPath = bestHamiltonianCycle(graph, snakeHeadGridNum, [], snakeGridBody, appleGridNum);
         console.timeEnd("hamilCycle")
+        console.log("hamilPath: ", hamilPath);
+
         if(hamilPath.length === 0){
-            console.log("Good luck could not find hamil path");
+            console.error("Good luck could not find hamil path");
+            log.clear();
+            log.d("Good luck could not find hamil path");
+            is_running_BestSnakeAI = false;
             foundHamilPath = false
+            run_AI_Find_Path = false;
             return [];
         }
         foundHamilPath = true;
-        return hamilPath;
+        bestPath = hamilPath;
     } else {
         console.time("A* Search")
         let shortestPath = shortestPathToApple(graph, snakeHeadGridNum, appleGridNum, snakeGridBody);
@@ -85,11 +94,17 @@ function bestPathToApple() {
         foundHamilPath = false;
         if(shortestPath.length === 0){
             //switch to Hamiltonian Cycle
-            run_Hamil_Algo_force = true;
+            run_Hamil_Algo = true;
+            run_Hamil_Algo_force = false;
+            console.error("Switching to Hamiltonian Cycle : ");
+            console.log("Snake Head: ", snakeHeadGridNum, " Apple: ", appleGridNum, " Snake Body: ", snakeGridBody);
             return bestPathToApple();
         }
-        return shortestPath;
+        bestPath = shortestPath;
     }
+    if (graphChanged)
+        bestPath = bestPath.map((path) => path.map((gridNum) => translateGridNum(gridNum, graphSizeForAlgo, graphPrevSz, 0)));
+    return bestPath;
 }
 
 function shortestPathToApple(graph, headGridNum, appleGridNum, snakeGridBody = []) {
@@ -101,9 +116,8 @@ function shortestPathToApple(graph, headGridNum, appleGridNum, snakeGridBody = [
 let pathsTried = 0;
 
 function bestHamiltonianCycle(graph, snakeHeadGridNum, blocked, snakeGridBody, appleGridNum) {
-    if(run_Hamil_Algo_force)
-        console.log("snakeGridBody: ", snakeGridBody, " graph size: ", graph.size);
     let hamilPaths = hamiltonianCycle(graph, snakeHeadGridNum, blocked, snakeGridBody, appleGridNum)
+    console.log("Hamil Paths: ", hamilPaths);
     let bestPath = evalBestHamilPath(hamilPaths, appleGridNum);
     return bestPath
 }
@@ -112,7 +126,7 @@ let pathWapple = 0;
 
 ///@desc Finds the shortest path where the snake eats the apple and return it
 function evalBestHamilPath(hamilPaths = [[]], appleGridNum) {
-    let bestPath = hamilPaths[0];
+    let bestPath = [];
     pathWapple = 0;
     hamilPaths.forEach((path) => {
         if (path.includes(appleGridNum)) {
@@ -201,17 +215,22 @@ function moveSnakeAlongVelPath() {
  * @param {Array} newGraphSize - The size of the new graph as [rows, cols]
  Here is the documentation for the `translateGridNum` function:
 
- * @param {number} rowOffset - The row offset for the translation (default is 0)
+ * @param {number} rowOffset - An integer that represents how many columns from the prevGraph is the newGraph shifted.
+ * @param colOffset - An integer that represents how many columns from the prevGraph is the newGraph shifted.
+ * from position 0,0. Therefore, rowOffset 0 mean they share the same top left corner
  * @returns {number} The translated node
  */
-function translateGridNum(prevNode, graphPrevSize = [0, 0], newGraphSize = [0, 0], rowOffset = 0) {
-    const colOffset = graphPrevSize[1] - newGraphSize[1];
-    if (colOffset === 0) return prevNode; //Until graph optimizes row as well
+function translateGridNum(prevNode, graphPrevSize = [0, 0], newGraphSize = [0, 0],
+                          rowOffset = 0, colOffset = 0) {
+
+    const colDiff = graphPrevSize[1] - newGraphSize[1] - colOffset;
+    if (colDiff === 0) return prevNode; //Until graph optimizes row as well
 
     const prevColSize = graphPrevSize[1];
-    const colInGraph = (Math.floor(prevNode / prevColSize) + 1) - rowOffset;
+    const colPrevGraph = (Math.floor(prevNode / prevColSize) + 1) - rowOffset;
+    const rowPrevGraph = (prevNode % prevColSize) + 1;
 
-    const translatedNode = (prevNode - rowOffset) - colOffset * (colInGraph - 1); //The first column's node does not change hence -1
+    const translatedNode = (prevNode - rowOffset) - colDiff * (colPrevGraph - 1); //The first column's node does not change hence -1
     console.log(prevNode," => ", translatedNode);
     return translatedNode;
 }
@@ -268,6 +287,8 @@ function cloneObject(obj, classType = Object) {
 function restart_AI_variables() {
     frameSnakeStartsOn = 0;
     is_running_BestSnakeAI = false;
+    run_Hamil_Algo_force = false;
+    run_AI_Find_Path = false;
 
     snakePath = [];
     snakeVelPath = [];
