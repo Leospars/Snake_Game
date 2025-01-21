@@ -1,72 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <!--    <meta content="3; url=https://leospars.github.io/Snake_Game/snake.html" http-equiv="refresh">-->
     <title>Redirect to Snake Game</title>
     <link href="./layout/snake.css" rel="stylesheet">
-</head>
-<body>
-<h1 id="snake-game">Snake Game</h1>
-<h3>Redirecting to the main page in <span>10</span> seconds...</h3>
-<h2 id="tasks">Tasks:</h2>
-<ul>
-    <li>Add sign in capabilities / Accounts</li>
-    <li>Store HighScore</li>
-    <li>Create Leader Board</li>
-    <li>Add buttons to make snake use ai algorithm rather than user control</li>
-    <li>Implement A* Search Algorithm</li>
-</ul>
-<h2 id="current-features">Current Features:</h2>
-<ul>
-    <li><p>Fully operable Snake Game using user input</p></li>
-    <li><p>Can toggle Hamiltonian Cycle and A* Search to play on it&#39;s own</p>
-    </li>
-    <li><p>Fully operable Snake Game using user input</p>
-    </li>
-    <li><p>Can preferentially choose a direction to move toward apple, and it will not hit itself</p>
-    </li>
-    <li><p>or the wall; if no other option is available will pause game</p>
-    </li>
-    <li><p>Buttons added to adjust speed of the game</p>
-    </li>
-    <li><p>Buttons added to make snake use AI algorithm rather than user control</p>
-    </li>
-</ul>
-<h2 id="background">Background:</h2>
-<p>Hamiltonian Cycle is a gridPath in graph theory that visits each vertex exactly once.<br>
-    Implementing this in the snake game, the snake visits every square on the board exactly once. <br>
-    This prevents the snake from ever hitting itself or the wall and will always grow the apple, no <br>
-    matter what random location it is generated in except when the field/canvas does not have an even <br>
-    number of columns and rows.</p>
-<p>This may be easily resolved by adding one HC cycle for even columns or rows and odd columns and rows.<br>
-    However, this is very boring, so we will try to implement a code that will allow the snake to generate<br>
-    a new HC cycle every time it eats an apple and one that avoids the possibility of hitting itself in the<br>
-    cycle where the map does not have even sides.</p>
-<h2 id="bugs">Bugs:</h2>
-<ul>
-    <li>
-        <ul> Snake can go through itself if you press the opposite direction fast enough
-            <ul> Solution: Add buffer to allow the next input to pass after the body new location update is complete.
-            </ul>
-        </ul>
-    </li>
-</ul>
-</body>
-<script>
-    let countDown = 0
-    const span = document.querySelector('span');
-    window.onload = () => {
-        countDown = span.textContent;
-        setTimeout(function () {
-            window.location.href = 'https://leospars.github.io/Snake_Game/snake.html';
-        }, countDown * 1000);
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: rgba(30, 30, 30, 0.75);
+        }
 
-        setInterval(() => {
-            const count = parseInt(span.textContent);
-            span.textContent = String(count - 1);
-        }, 1000);
-    }
-</script>
+        .left-column,
+        .right-column {
+            flex: 1;
+            margin: 0 10px;
+            text-align: left;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="snake-game">Snake Game</h1>
+    <button class="big-button" onclick="window.location.href='./snake.html'">Go to
+        Snake Game</button>
+    <div class="container">
+        <div class="left-column">
+            <h2 id="tasks">Tasks:</h2>
+            <ul>
+                <li>Add sign in capabilities / Accounts</li>
+                <li>Store HighScore</li>
+                <li>Create Leader Board</li>
+                <li>Add buttons to make snake use ai algorithm rather than user control</li>
+                <li>Implement A* Search Algorithm</li>
+            </ul>
+            <h2 id="current-features">Current Features:</h2>
+            <ul>
+                <li> Fully operable Snake Game using user input
+                <li> Can toggle Hamiltonian Cycle and A* Search to play on it&#39;s own
+                <li> Fully operable Snake Game using user input
+                <li> Can preferentially choose a direction to move toward apple, and it will not hit itself
+                <li> or the wall; if no other option is available will pause game
+                <li> Buttons added to adjust speed of the game
+                <li> Buttons added to make snake use AI algorithm rather than user control
+                </li>
+            </ul>
+        </div>
+        <div class="right-column">
+            <h2 id="background">Background:</h2>
+            <p>Hamiltonian Cycle is a gridPath in graph theory that visits each vertex exactly once.
+                Implementing this in the snake game, the snake visits every square on the board exactly once.
+                This prevents the snake from ever hitting itself or the wall and will always grow the apple, no
+                matter what random location it is generated in except when the field/canvas does not have an even
+                number of columns and rows.
+            <p>This may be easily resolved by adding one HC cycle for even columns or rows and odd columns and rows.
+                However, this is very boring, so we will try to implement a code that will allow the snake to generate
+                a new HC cycle every time it eats an apple and one that avoids the possibility of hitting itself in the
+                cycle where the map does not have even sides.</p>
+            <p>Note: Due to the toggle button you may toggle the algorithms when the snake is in a position where it
+                cannot win. Solution: Toggle only after eating an apple again. When running A* Algorithm if it fails to
+                find a best path it will toggle to Hamiltonian Cycle to guarantee a safe path then back to A*</p>
+        </div>
+    </div>
+</body>
+
 </html>

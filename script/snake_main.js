@@ -17,7 +17,7 @@ let gameOver = false,
     score = 0,
     highScore = 0;
 let gameUpdate;
-let frameRate = 1000 / 9; //9fps
+let frameRate = 1000 / 4; //20fps
 let initialFrameRate = frameRate;
 let frame = 0;
 

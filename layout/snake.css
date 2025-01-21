@@ -71,17 +71,6 @@ body{
     animation: infinite;
 }
 
-/*.fieldsan{*/
-/*    width: 500px;*/
-/*    height: 500px;*/
-/*    display: block;*/
-/*    location: relative;*/
-/*    left: calc(50% - 250px); !*center the field*!*/
-/*    visibility: visible;*/
-/*    border: 5px solid black;*/
-/*    background-color: aquamarine;*/
-/*}*/
-
 .alert{
     display: block;
     text-align: center;
@@ -117,8 +106,16 @@ body{
 button{
     display: inline-block;
     margin: 0.3rem;
+    font-size: 1rem;
+    padding: 0.5rem;
     background-color: lavender;
     font-variant-caps: all-small-caps;
+}
+
+.big-button {
+    font-size: 1.25rem;
+    padding: 10px 20px;
+    margin-bottom: 1rem;
 }
 
 button:hover{
