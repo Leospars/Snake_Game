@@ -100,6 +100,10 @@ function update() {
         if (arrowKeyPressed) arrowKeyPressed = !arrowKeyPressed;
         else snake.update();
 
+        // if snake is moving, Clear alert message
+        if (snake.xVel !== 0 || snake.yVel !== 0) {
+            document.getElementById("GameOver").innerHTML = "";
+        }
         //Initialize AI
         let xDistToApple = snake.xPos - appleX;
         let yDistToApple = snake.yPos - appleY;

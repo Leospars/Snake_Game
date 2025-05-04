@@ -8,17 +8,13 @@
 
 </head>
 <body>
-<h1>Snake Game</h1>
     <p name="alertBox" class="alert"><b>
-        <p id="GameOver" class="alert">Press Any Arrow Key to Begin</p>
-        HighScore: <p id="highScore">0</p> Score: <p id="score">0</p>
+        <h1>Snake Game</h1>
+        <p id="GameOver" class="alert">Press Any Arrow Key to Begin
+        <p>High Score: <span id="highScore">0</span> Score: <span id="score">0</span></p>
     </b></p>
-    <div id="ui_buttons">
-        <button id="restart" type = "reset" name="Restart">Restart</button>
-        <button id="pause_play" type = "button" name="Pause_Play">⏸️</button>
-    </div>
-
-    <br>
+<div id="ui_buttons"></div>
+<br>
 <div id="canvas-container">
     <canvas id="field" class="gameField"></canvas>
     <canvas class="gameField" id="overlay"></canvas>
@@ -37,4 +33,12 @@
 <script src="script/optimizeHamilCycle.mjs"></script>
 
 <footer>Made by <i>@<a href="https://github.com/Leospars">Leospars</a></i>></footer>
+<!-- Prevent arrow keys from scrolling the page -->
+<script>
+    document.addEventListener('keydown', function(event) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
+        }
+    });
+</script>
 </html>

@@ -55,11 +55,6 @@ let setButtonEvents = function () {
     pauseButton.click(pause_play);
 
     //AI buttons
-    new Button("ai_pref_dir").click(function () {
-        if (run_AI_Find_Path) run_AI_Find_Path = !run_AI_Find_Path;
-        run_AI_Pref_Dir = !run_AI_Pref_Dir;
-        console.log("AI_Pref_Dir: ", run_AI_Pref_Dir);
-    });
 
     new Button("run_ai").click(function () {
         if (run_AI_Pref_Dir) run_AI_Pref_Dir = !run_AI_Pref_Dir;
