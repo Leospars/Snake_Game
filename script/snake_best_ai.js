@@ -26,17 +26,29 @@ function snakeBestAI() {
         console.log("Snake Path: ", snakePath);
         snakeVelPath = gridPathToSnakeVelPath(snakePath);
         console.groupEnd();
+        running_ai = (run_Hamil_Algo) ? "Running Hamil Cycle: " : "Running A* Path: ";
     }
     // let thisID = setTimeout(() => console.log(log.clear(), "Clear Log"),2000);
     // clearTimeout(thisID);
-    log.clear();
-    log.d("Running Snake along Path: ");
-    log.d('[' + snakePath + ']');
+
+    if (running_ai === "Running Hamil Cycle: " && run_Hamil_Algo === false) {
+        log.clear();
+        log.d("Switching to A* Path: ");
+        log.d('[ - ]');
+    } else if (running_ai === "Running A* Path: " && run_Hamil_Algo === true) {
+        log.clear();
+        log.d("Switching to Hamil Cycle: ");
+        log.d('[ - ]');
+    } else {
+        log.clear();
+        log.d(running_ai);
+        log.d('[' + snakePath + ']');
+    }
     moveSnakeAlongVelPath();
 }
 
 let foundHamilPath = false;
-let run_Hamil_Algo_force = true;
+let run_Hamil_Algo_force = false;
 
 function bestPathToApple() {
     let graph = new GridGraph(rows, cols);
@@ -62,9 +74,7 @@ function bestPathToApple() {
 
     //Choose Algorithm to use to find bestPath
     if (run_Hamil_Algo_force === true) {
-        if (snake.body.length > 0.30 * rows * cols)
             run_Hamil_Algo = true;
-        else run_Hamil_Algo = false;
     }
 
     if (run_Hamil_Algo) {
@@ -76,9 +86,9 @@ function bestPathToApple() {
         console.log("hamilPath: ", hamilPath);
 
         if(hamilPath.length === 0){
-            console.error("Good luck could not find hamil path");
+            console.error("Good luck A* failed and then we could not find hamil path");
             log.clear();
-            log.d("Good luck could not find hamil path");
+            log.d("Good luck A* failed and then we could not find hamil path");
             is_running_BestSnakeAI = false;
             foundHamilPath = false
             run_AI_Find_Path = false;
@@ -95,7 +105,7 @@ function bestPathToApple() {
         if(shortestPath.length === 0){
             //switch to Hamiltonian Cycle
             run_Hamil_Algo = true;
-            run_Hamil_Algo_force = false;
+            run_Hamil_Algo_force = true;
             console.error("Switching to Hamiltonian Cycle : ");
             console.log("Snake Head: ", snakeHeadGridNum, " Apple: ", appleGridNum, " Snake Body: ", snakeGridBody);
             return bestPathToApple();
